@@ -1,0 +1,31 @@
+lab:
+  name: "Example Institute"
+  contact: "bio@example.org"
+
+auth:
+  provider: ls-login
+  ls_login:
+    client_id: "replace-me"
+    client_secret: "replace-me"
+    redirect_uri: "https://beacon.lab.example.org/oauth2/callback"
+
+services:
+  beacon:
+    enabled: true
+    access_level: registered
+    dataset_name: "Example cohort"
+  wes:
+    enabled: false
+    engine: nextflow
+  tes:
+    enabled: false
+    backend: slurm
+    slurm:
+      partition: short
+  drs:
+    enabled: false
+
+deploy:
+  target: compose
+  host: "beacon.lab.example.org"
+  tls: true

@@ -1,0 +1,14 @@
+[Unit]
+Description=Sapporo WES Server
+After=network.target
+
+[Service]
+Type=simple
+User=sapporo
+WorkingDirectory=/opt/sapporo
+ExecStart=/usr/local/bin/uvicorn sapporo.app:app --host 0.0.0.0 --port 1122
+Restart=on-failure
+Environment=HOME=/home/sapporo
+
+[Install]
+WantedBy=multi-user.target

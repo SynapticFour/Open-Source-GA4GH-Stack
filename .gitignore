@@ -1,0 +1,24 @@
+.DS_Store
+*.pyc
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+cli/.venv/
+.venv/
+
+# Generated local deploy artefacts
+docker-compose.generated.yml
+deploy/helm/values.generated.yaml
+config/**/conf.py
+!config/**/conf.py.template
+config/beacon/mongo/conf.env
+config/caddy/Caddyfile
+config/oauth2-proxy/oauth2-proxy.cfg
+config/funnel/funnel.conf
+config/sapporo/executable_workflows.json
+config/drs/drs.config.yml
+
+# Helm packaging
+deploy/helm/charts/*.tgz
+deploy/helm/Chart.lock

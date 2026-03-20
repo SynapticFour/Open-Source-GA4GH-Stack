@@ -1,0 +1,32 @@
+services:
+  beacon:
+    image: egarchive/beacon2-pi-api:latest
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./config/beacon/conf.py:/beacon/conf/conf.py:ro
+      - ./config/beacon/mongo/conf.env:/beacon/connections/mongo/conf.env:ro
+      - ./data/demo:/beacon/data:ro
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:5.0.32
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-changeme}
+      MONGO_INITDB_DATABASE: beacon
+    volumes:
+      - mongo_data:/data/db
+      - ./data/demo:/demo:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  mongo_data:

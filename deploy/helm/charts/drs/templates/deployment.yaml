@@ -1,0 +1,44 @@
+{{- if .Values.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-drs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: drs
+  template:
+    metadata:
+      labels:
+        app: drs
+    spec:
+      containers:
+        - name: drs
+          image: {{ .Values.image | quote }}
+          args:
+            - java
+            - -jar
+            - ga4gh-starter-kit-drs.jar
+            - -c
+            - /config/drs.config.yml
+          env:
+            - name: JAVA_OPTS
+              value: "-Xmx512m"
+          ports:
+            - containerPort: 4500
+            - containerPort: 4501
+          volumeMounts:
+            - name: config
+              mountPath: /config/drs.config.yml
+              subPath: drs.config.yml
+            - name: db
+              mountPath: /db
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-drs-config
+        - name: db
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-drs-db
+{{- end }}

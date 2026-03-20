@@ -1,0 +1,11 @@
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-caddyfile
+data:
+  Caddyfile: |
+    {{ .Values.site }} {
+        respond "GA4GH Community Stack (Helm) — configure routes in values" 200
+    }
+{{- end }}

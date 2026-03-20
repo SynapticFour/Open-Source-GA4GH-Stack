@@ -1,0 +1,8 @@
+[
+  {
+    "cohortId": "demo-cohort",
+    "cohortType": "study-defined",
+    "name": "Demo cohort",
+    "datasetIds": ["demo-dataset-1"]
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "individualId": "demo-individual-1",
+    "sex": {
+      "id": "PATO_002",
+      "label": "male"
+    },
+    "datasets": ["demo-dataset-1"],
+    "cohorts": ["demo-cohort"]
+  }
+]

@@ -1,0 +1,30 @@
+# Funnel TES — https://github.com/ohsu-comp-bio/funnel
+# Adjust for SLURM login node (see docs/SLURM-SETUP.md)
+
+Server:
+  HostName: funnel
+  RPCPort: "9090"
+  HTTPPort: "8000"
+
+Node:
+  ID: funnel-node-1
+  Resources:
+    CPU: 1
+    RAM: 1.0 GB
+    Disk: 10.0 GB
+
+Database:
+  Path: /opt/funnel/funnel.db
+
+Worker:
+  WorkDir: /opt/funnel/work
+
+Compute: local
+# For SLURM on an HPC login node, replace Compute with:
+# Compute: slurm
+# Slurm:
+#   Partition: "{{ slurm_partition }}"
+#   Timelimit: "{{ slurm_timelimit }}"
+
+Docker:
+  Endpoint: unix:///var/run/docker.sock

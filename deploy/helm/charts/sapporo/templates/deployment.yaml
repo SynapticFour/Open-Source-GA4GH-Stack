@@ -1,0 +1,26 @@
+{{- if .Values.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-sapporo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sapporo
+  template:
+    metadata:
+      labels:
+        app: sapporo
+    spec:
+      containers:
+        - name: sapporo
+          image: {{ .Values.image | quote }}
+          ports:
+            - containerPort: 1122
+          env:
+            - name: SAPPORO_HOST
+              value: "0.0.0.0"
+            - name: SAPPORO_PORT
+              value: "1122"
+{{- end }}

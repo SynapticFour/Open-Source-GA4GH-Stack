@@ -1,0 +1,13 @@
+[Unit]
+Description=Funnel TES Server
+After=network.target
+
+[Service]
+Type=simple
+User=funnel
+ExecStart=/usr/local/bin/funnel server run --config /etc/funnel/funnel.conf
+Restart=on-failure
+Environment=HOME=/home/funnel
+
+[Install]
+WantedBy=multi-user.target

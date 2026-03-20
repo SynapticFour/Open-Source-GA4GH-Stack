@@ -1,0 +1,30 @@
+{{- if .Values.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "beacon.fullname" . }}-mongo
+  labels:
+    app.kubernetes.io/name: beacon-mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: beacon-mongo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: beacon-mongo
+    spec:
+      containers:
+        - name: mongodb
+          image: {{ .Values.mongo.image | quote }}
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: root
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: {{ .Values.mongo.password | quote }}
+            - name: MONGO_INITDB_DATABASE
+              value: beacon
+{{- end }}

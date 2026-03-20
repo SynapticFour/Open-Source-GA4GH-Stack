@@ -1,0 +1,26 @@
+# ELIXIR LS Login via oauth2-proxy — alpha-style config
+# Limit: not GA4GH Passport-aware; see docs/LIMITATIONS.md
+
+provider = "oidc"
+oidc_issuer_url = "https://login.elixir-czech.org/oidc/"
+client_id = "{{ ls_login_client_id }}"
+client_secret = "{{ ls_login_client_secret }}"
+redirect_url = "{{ redirect_url }}"
+cookie_secret = "{{ cookie_secret }}"
+cookie_secure = {{ cookie_secure }}
+
+email_domains = [ "*" ]
+
+upstreams = [ "{{ oauth_upstream }}" ]
+
+{% if demo_skip_auth %}
+# Demo only — disables authentication gate (do not use in production).
+skip_auth_regex = [ "^.*$" ]
+{% endif %}
+
+skip_auth_routes = [
+  "^/ga4gh/beacon/v2/service-info$",
+  "^/ga4gh/beacon/v2/info$",
+]
+
+http_address = "0.0.0.0:4180"

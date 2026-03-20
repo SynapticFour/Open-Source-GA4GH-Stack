@@ -1,0 +1,15 @@
+services:
+  funnel:
+    image: ohsucompbio/funnel:latest
+    ports:
+      - "8000:8000"
+      - "9090:9090"
+    volumes:
+      - ./config/funnel/funnel.conf:/etc/funnel/funnel.conf:ro
+      - funnel_work:/opt/funnel/work
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: ["funnel", "server", "run", "--config", "/etc/funnel/funnel.conf"]
+    restart: unless-stopped
+
+volumes:
+  funnel_work:

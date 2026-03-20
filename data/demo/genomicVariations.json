@@ -1,0 +1,11 @@
+[
+  {
+    "variationId": "demo-var-1",
+    "individualId": "demo-individual-1",
+    "assemblyId": "GRCh38",
+    "referenceName": "22",
+    "start": 16050075,
+    "referenceBases": "A",
+    "alternateBases": "G"
+  }
+]

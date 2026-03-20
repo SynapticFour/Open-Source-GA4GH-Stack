@@ -1,0 +1,46 @@
+name: Compose smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  beacon-compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CLI
+        run: pip install -e "./cli"
+
+      - name: Generate compose
+        run: |
+          lab-stack generate compose \
+            --config config/profiles/beacon-only.env \
+            --output /tmp/ga4gh-cs
+
+      - name: Validate compose file
+        run: docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs config
+
+      - name: Start Beacon + MongoDB
+        run: |
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs up -d beacon mongodb
+
+      - name: Wait for Beacon
+        run: sleep 30
+
+      - name: service-info
+        run: |
+          curl --fail --retry 5 --retry-delay 5 \
+            http://localhost:5050/ga4gh/beacon/v2/service-info
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs down -v

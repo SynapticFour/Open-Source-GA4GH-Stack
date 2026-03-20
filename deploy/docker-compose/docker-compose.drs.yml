@@ -1,0 +1,21 @@
+services:
+  drs:
+    image: ga4gh/ga4gh-starter-kit-drs:0.2.0
+    ports:
+      - "4500:4500"
+      - "4501:4501"
+    volumes:
+      - ./config/drs/drs.config.yml:/config/drs.config.yml:ro
+      - drs_db:/db
+    command:
+      - java
+      - -jar
+      - ga4gh-starter-kit-drs.jar
+      - -c
+      - /config/drs.config.yml
+    environment:
+      - JAVA_OPTS=-Xmx512m
+    restart: unless-stopped
+
+volumes:
+  drs_db:

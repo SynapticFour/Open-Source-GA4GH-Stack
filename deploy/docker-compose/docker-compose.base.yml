@@ -1,0 +1,24 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:latest
+    ports:
+      - "4180:4180"
+    volumes:
+      - ./config/oauth2-proxy/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
+    command: ["--config", "/etc/oauth2-proxy.cfg"]
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

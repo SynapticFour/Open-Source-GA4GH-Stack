@@ -1,0 +1,29 @@
+# Caddy 2 — paths forwarded as-is (Beacon/WES/TES/DRS expect /ga4gh/... prefixes)
+{{ caddy_site }} {
+{% if beacon %}
+    handle /ga4gh/beacon/* {
+        reverse_proxy beacon:5050
+    }
+{% endif %}
+{% if wes %}
+    handle /ga4gh/wes/* {
+        reverse_proxy sapporo:1122
+    }
+{% endif %}
+{% if tes %}
+    handle /ga4gh/tes/* {
+        reverse_proxy funnel:8000
+    }
+{% endif %}
+{% if drs %}
+    handle /ga4gh/drs/* {
+        reverse_proxy drs:4500
+    }
+{% endif %}
+
+    handle /oauth2/* {
+        reverse_proxy oauth2-proxy:4180
+    }
+
+    respond "{{ caddy_health_body }}" 200
+}

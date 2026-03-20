@@ -1,0 +1,3 @@
+GA4GH Community Stack (Helm)
+Enabled subcharts depend on values — see deploy/helm/values.yaml
+Run: helm dependency build ./deploy/helm && helm template test ./deploy/helm

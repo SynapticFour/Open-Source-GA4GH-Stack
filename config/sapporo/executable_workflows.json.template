@@ -1,0 +1,7 @@
+[
+  {
+    "workflow_type": "Nextflow",
+    "workflow_type_version": "{{ wes_engine_version }}",
+    "workflow_url": "https://example.com/workflows/demo.nf"
+  }
+]

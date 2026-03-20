@@ -1,0 +1,9 @@
+[
+  {
+    "id": "demo-dataset-1",
+    "name": "Community Stack Demo Dataset",
+    "description": "Synthetic demo records for local testing only.",
+    "createDateTime": "2025-01-01T00:00:00Z",
+    "updateDateTime": "2025-01-01T00:00:00Z"
+  }
+]

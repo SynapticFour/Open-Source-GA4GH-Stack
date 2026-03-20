@@ -1,0 +1,31 @@
+apiVersion: v2
+name: ga4gh-community-stack
+description: Umbrella chart — GA4GH Community Stack (subcharts per service)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: beacon
+    version: 0.1.0
+    repository: file://charts/beacon
+    condition: beacon.enabled
+  - name: sapporo
+    version: 0.1.0
+    repository: file://charts/sapporo
+    condition: wes.enabled
+  - name: funnel
+    version: 0.1.0
+    repository: file://charts/funnel
+    condition: tes.enabled
+  - name: drs
+    version: 0.1.0
+    repository: file://charts/drs
+    condition: drs.enabled
+  - name: oauth2-proxy
+    version: 0.1.0
+    repository: file://charts/oauth2-proxy
+    condition: oauth2Proxy.enabled
+  - name: caddy
+    version: 0.1.0
+    repository: file://charts/caddy
+    condition: caddy.enabled

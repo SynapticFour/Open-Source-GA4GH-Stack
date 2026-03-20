@@ -1,0 +1,27 @@
+global:
+  host: example.org
+  tls: true
+
+beacon:
+  enabled: false
+  image: egarchive/beacon2-pi-api:latest
+  mongo_password: changeme
+
+wes:
+  enabled: false
+  engine: nextflow
+
+tes:
+  enabled: false
+  backend: slurm
+  slurm:
+    partition: short
+
+drs:
+  enabled: false
+
+oauth2Proxy:
+  enabled: false
+
+caddy:
+  enabled: false
