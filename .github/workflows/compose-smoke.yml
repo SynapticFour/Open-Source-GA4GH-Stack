@@ -41,6 +41,10 @@ jobs:
             sleep 5
           done
           echo "Beacon did not become ready within 360s"
+          echo "---- Beacon container state ----"
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs ps -a || true
+          echo "---- Beacon + Mongo logs (tail) ----"
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs logs --no-color --tail=200 beacon mongodb || true
           exit 1
 
       - name: Beacon diagnostics on failure

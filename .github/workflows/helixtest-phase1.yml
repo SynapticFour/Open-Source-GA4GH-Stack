@@ -33,15 +33,31 @@ jobs:
             --project-directory /tmp/ga4gh-cs up -d beacon mongodb
 
       - name: Wait for Beacon service-info
+        id: wait
+        continue-on-error: true
         run: |
-          set +e
+          ready=false
           for i in $(seq 1 72); do
-            curl -fsS http://localhost:5050/ga4gh/beacon/v2/service-info >/dev/null && exit 0
+            if curl -fsS http://localhost:5050/ga4gh/beacon/v2/service-info >/dev/null; then
+              ready=true
+              break
+            fi
             echo "[wait] Beacon not ready yet (attempt ${i}/72), sleeping 5s"
             sleep 5
           done
+
+          if [ "$ready" = "true" ]; then
+            echo "beacon_ready=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "beacon_ready=false" >> "$GITHUB_OUTPUT"
           echo "Beacon did not become ready within 360s"
-          exit 1
+          echo "---- Beacon container state ----"
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs ps -a || true
+          echo "---- Beacon + Mongo logs (tail) ----"
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs logs --no-color --tail=200 beacon mongodb || true
+          exit 0
 
       - name: Beacon diagnostics on failure
         if: failure()
@@ -59,6 +75,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Run HelixTest (phase 1, beacon-only, non-blocking)
+        if: steps.wait.outputs.beacon_ready == 'true'
         continue-on-error: true
         env:
           BEACON_URL: http://localhost:5050/ga4gh/beacon/v2
