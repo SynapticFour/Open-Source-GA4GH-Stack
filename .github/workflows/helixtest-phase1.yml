@@ -118,7 +118,7 @@ jobs:
           # stdout goes to the JSON report file; stdout/stderr may otherwise be quiet.
           cargo run --bin helixtest -- \
             --all \
-            --mode generic \
+            --mode ferrum \
             --only beacon \
             --verbose \
             --report json \
