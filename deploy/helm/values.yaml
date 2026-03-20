@@ -4,7 +4,7 @@ global:
 
 beacon:
   enabled: false
-  image: egarchive/beacon2-pi-api:latest
+  image: ghcr.io/ega-archive/beacon2-pi-api:latest
   mongo_password: changeme
 
 wes:

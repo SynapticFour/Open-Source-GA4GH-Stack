@@ -1,6 +1,6 @@
 services:
   beacon:
-    image: egarchive/beacon2-pi-api:latest
+    image: ghcr.io/ega-archive/beacon2-pi-api:latest
     ports:
       - "5050:5050"
     volumes:

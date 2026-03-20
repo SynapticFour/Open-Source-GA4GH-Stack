@@ -1,5 +1,5 @@
 enabled: false
-image: egarchive/beacon2-pi-api:latest
+image: ghcr.io/ega-archive/beacon2-pi-api:latest
 mongo:
   image: mongo:5.0.32
   password: changeme

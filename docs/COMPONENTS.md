@@ -5,7 +5,7 @@ Exact versions and images are pinned in the root **README** and Compose fragment
 ## Beacon v2 — `beacon2-pi-api`
 
 - **Repository:** [EGA-archive/beacon2-pi-api](https://github.com/EGA-archive/beacon2-pi-api)
-- **Image:** `egarchive/beacon2-pi-api:latest`
+- **Image:** `ghcr.io/ega-archive/beacon2-pi-api:latest` (GHCR — [package](https://github.com/EGA-archive/beacon2-pi-api/pkgs/container/beacon2-pi-api); the Docker Hub name `egarchive/...` is not used for public pulls)
 - **Datastore:** MongoDB **5.0.32** (Compose default)
 - **Config:** Python module at `beacon/conf/conf.py` (mounted from `config/beacon/conf.py` in this kit). **Mongo connection** is via `beacon/connections/mongo/conf.env` (mounted from `config/beacon/mongo/conf.env`).
 - **Ingest:** [beacon2-ri-tools-v2](https://github.com/EGA-archive/beacon2-ri-tools-v2)

@@ -39,7 +39,7 @@ The same audiences as Ferrum Lab Kit and comparable **GA4GH teaching / pilot** p
 
 | Component | Upstream | Container image | License |
 |-----------|----------|-----------------|--------|
-| **Beacon v2** | [EGA-archive/beacon2-pi-api](https://github.com/EGA-archive/beacon2-pi-api) | `egarchive/beacon2-pi-api:latest` | Apache-2.0 |
+| **Beacon v2** | [EGA-archive/beacon2-pi-api](https://github.com/EGA-archive/beacon2-pi-api) | `ghcr.io/ega-archive/beacon2-pi-api:latest` | Apache-2.0 |
 | **MongoDB (Beacon)** | — | `mongo:5.0.32` | SSPL — [MongoDB licensing](https://www.mongodb.com/legal/licensing/sspl) |
 | **WES** | [sapporo-wes/sapporo-service](https://github.com/sapporo-wes/sapporo-service) | `ghcr.io/sapporo-wes/sapporo-service:latest` | Apache-2.0 |
 | **TES** | [ohsu-comp-bio/funnel](https://github.com/ohsu-comp-bio/funnel) | `ohsucompbio/funnel:latest` | MIT |
