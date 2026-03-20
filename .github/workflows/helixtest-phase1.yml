@@ -67,6 +67,29 @@ jobs:
           docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs logs --no-color --tail=200 beacon mongodb || true
           exit 0
 
+      - name: Seed Beacon demo data into MongoDB
+        if: steps.wait.outputs.beacon_ready == 'true'
+        run: |
+          # Seed the minimal demo collections that HelixTest queries.
+          # This mirrors `lab-stack demo seed` / `run_demo_seed` behavior.
+          MONGO_PASSWORD="$(awk -F= '$1=="MONGO_PASSWORD"{print $2; exit}' /tmp/ga4gh-cs/.env)"
+
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs exec -T mongodb mongoimport \
+            --authenticationDatabase admin -u root -p "$MONGO_PASSWORD" \
+            --db beacon --collection datasets --jsonArray --file /demo/datasets.json
+
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs exec -T mongodb mongoimport \
+            --authenticationDatabase admin -u root -p "$MONGO_PASSWORD" \
+            --db beacon --collection cohorts --jsonArray --file /demo/cohorts.json
+
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs exec -T mongodb mongoimport \
+            --authenticationDatabase admin -u root -p "$MONGO_PASSWORD" \
+            --db beacon --collection individuals --jsonArray --file /demo/individuals.json
+
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs exec -T mongodb mongoimport \
+            --authenticationDatabase admin -u root -p "$MONGO_PASSWORD" \
+            --db beacon --collection genomicVariations --jsonArray --file /demo/genomicVariations.json
+
       - name: Beacon diagnostics on failure
         if: failure()
         run: |
