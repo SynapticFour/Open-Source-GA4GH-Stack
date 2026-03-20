@@ -1,6 +1,8 @@
 services:
   beacon:
     image: ghcr.io/ega-archive/beacon2-pi-api:latest
+    # Upstream starts Beacon explicitly via `python -m beacon`.
+    command: ["python", "-m", "beacon"]
     ports:
       - "5050:5050"
     volumes:

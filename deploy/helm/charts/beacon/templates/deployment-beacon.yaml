@@ -18,6 +18,7 @@ spec:
       containers:
         - name: beacon
           image: {{ .Values.image | quote }}
+          command: ["python","-m","beacon"]
           ports:
             - containerPort: 5050
           volumeMounts:
