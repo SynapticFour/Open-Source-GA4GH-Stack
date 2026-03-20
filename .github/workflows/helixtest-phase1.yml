@@ -1,0 +1,80 @@
+name: HelixTest Phase 1
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  beacon-safe-subset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CLI
+        run: pip install -e "./cli"
+
+      - name: Generate compose (Beacon profile)
+        run: |
+          lab-stack generate compose \
+            --config config/profiles/beacon-only.env \
+            --output /tmp/ga4gh-cs
+
+      - name: Start Beacon + MongoDB
+        run: |
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml \
+            --project-directory /tmp/ga4gh-cs up -d beacon mongodb
+
+      - name: Wait for Beacon service-info
+        run: |
+          curl --fail --retry 18 --retry-delay 5 --retry-connrefused \
+            http://localhost:5050/ga4gh/beacon/v2/service-info
+
+      - name: Beacon diagnostics on failure
+        if: failure()
+        run: |
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs ps
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs logs --no-color beacon mongodb || true
+
+      - name: Checkout HelixTest
+        uses: actions/checkout@v4
+        with:
+          repository: SynapticFour/HelixTest
+          path: helixtest-upstream
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run HelixTest (phase 1, beacon-only, non-blocking)
+        continue-on-error: true
+        env:
+          BEACON_URL: http://localhost:5050/ga4gh/beacon/v2
+        run: |
+          cd helixtest-upstream/helixtest
+          cargo run --bin helixtest -- \
+            --all \
+            --mode generic \
+            --only beacon \
+            --report json \
+            --fail-level 0 > /tmp/helix-report-phase1.json
+
+      - name: Upload HelixTest report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: helix-report-phase1
+          path: /tmp/helix-report-phase1.json
+          if-no-files-found: warn
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml \
+            --project-directory /tmp/ga4gh-cs down -v

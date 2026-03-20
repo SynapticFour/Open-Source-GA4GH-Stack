@@ -32,13 +32,16 @@ jobs:
         run: |
           docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs up -d beacon mongodb
 
-      - name: Wait for Beacon
-        run: sleep 30
-
-      - name: service-info
+      - name: Wait for Beacon service-info
         run: |
-          curl --fail --retry 5 --retry-delay 5 \
+          curl --fail --retry 18 --retry-delay 5 --retry-connrefused \
             http://localhost:5050/ga4gh/beacon/v2/service-info
+
+      - name: Beacon diagnostics on failure
+        if: failure()
+        run: |
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs ps
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs logs --no-color beacon mongodb || true
 
       - name: Tear down
         if: always()
