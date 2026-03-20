@@ -116,6 +116,7 @@ jobs:
             --all \
             --mode generic \
             --only beacon \
+            --verbose \
             --report json \
             --fail-level 0 > /tmp/helix-report-phase1.json
 
