@@ -23,6 +23,10 @@ lab-stack demo start
 
 Or use `./install.sh` once the package is on PyPI (installs `lab-stack` into your user environment).
 
+### Pip install only (no git clone)
+
+Releases ship **Compose fragments, config templates, and demo JSON** inside the wheel under `community_stack/_bundled/`. After `pip install ga4gh-community-stack`, run commands from a **writable project directory** (e.g. `mkdir ~/my-lab && cd ~/my-lab`); generated files default to the current directory. `lab-stack compare` uses the bundled `COMPARISON.md`. See [docs/RELEASING.md](docs/RELEASING.md) for publishing.
+
 ---
 
 ## Who is this for?

@@ -23,3 +23,7 @@ mypy src/ --strict
 - Describe what problem the change solves.
 - For behaviour changes, update relevant docs (`docs/`, `README.md`).
 - CI runs tests, Ruff, and mypy on Python 3.11 and 3.12.
+
+## Releases
+
+See [docs/RELEASING.md](docs/RELEASING.md) for wheel layout, PyPI trusted publishing, and version bumps.

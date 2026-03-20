@@ -35,6 +35,11 @@ Exact versions and images are pinned in the root **README** and Compose fragment
 - **Spec level:** **DRS 1.3.0-experimental** (see [LIMITATIONS.md](LIMITATIONS.md))
 - **Ports:** `4500` (public), `4501` (admin).
 
+## Optional IdP — Keycloak (Compose)
+
+- **Fragment:** `deploy/docker-compose/docker-compose.keycloak.yml` (merged when `auth.provider: keycloak`).
+- **Docs:** [KEYCLOAK.md](KEYCLOAK.md)
+
 ## Edge authentication — oauth2-proxy
 
 - **Repository:** [oauth2-proxy/oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy)

@@ -9,7 +9,7 @@ from community_stack.demo_cmd import run_demo_seed_only, run_demo_start
 from community_stack.generate import run_generate_compose
 from community_stack.helm_gen import write_values
 from community_stack.init_wizard import run_init_wizard
-from community_stack.paths import find_repo_root
+from community_stack.paths import default_project_output_dir, find_assets_root
 from community_stack.status_cmd import run_status
 from community_stack.systemd_gen import copy_systemd_units
 
@@ -48,7 +48,7 @@ def generate_compose(
 ) -> None:
     """Merge compose fragments and render config templates."""
     path = run_generate_compose(
-        repo_root=None,
+        assets_root=None,
         stack_yaml=stack,
         profile_path=profile,
         output_dir=output,
@@ -69,12 +69,19 @@ def generate_helm(stack: Path | None, output: Path | None) -> None:
     """Emit Helm values from stack.yml."""
     from community_stack.config import StackConfig
 
-    root = find_repo_root()
-    stack_path = stack or (root / "stack.yml")
+    assets = find_assets_root()
+    out_base = default_project_output_dir(assets)
+    stack_path: Path | None = stack
+    if stack_path is None or not stack_path.is_file():
+        cwd_candidate = Path.cwd() / "stack.yml"
+        stack_path = cwd_candidate if cwd_candidate.is_file() else out_base / "stack.yml"
     if not stack_path.is_file():
-        raise click.ClickException(f"stack.yml not found at {stack_path}")
+        raise click.ClickException(
+            "stack.yml not found (try `lab-stack init` or pass --stack)",
+        )
     cfg = StackConfig.from_yaml(stack_path)
-    dest = output or (root / "deploy" / "helm" / "values.generated.yaml")
+    dest = output or (out_base / "deploy" / "helm" / "values.generated.yaml")
+    dest.parent.mkdir(parents=True, exist_ok=True)
     write_values(cfg, dest)
     click.echo(f"Wrote {dest}")
 
@@ -88,8 +95,9 @@ def generate_helm(stack: Path | None, output: Path | None) -> None:
 )
 def generate_systemd(output: Path | None) -> None:
     """Copy SLURM-oriented systemd units."""
-    root = find_repo_root()
-    dest = output or (root / "deploy" / "slurm" / "generated")
+    assets = find_assets_root()
+    out_base = default_project_output_dir(assets)
+    dest = output or (out_base / "deploy" / "slurm" / "generated")
     copy_systemd_units(dest)
     click.echo(f"Copied systemd units to {dest}")
 

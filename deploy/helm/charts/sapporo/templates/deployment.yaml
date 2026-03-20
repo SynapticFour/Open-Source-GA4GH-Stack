@@ -23,4 +23,13 @@ spec:
               value: "0.0.0.0"
             - name: SAPPORO_PORT
               value: "1122"
+          volumeMounts:
+            - name: workflows
+              mountPath: /app/executable_workflows.json
+              subPath: executable_workflows.json
+              readOnly: true
+      volumes:
+        - name: workflows
+          configMap:
+            name: {{ .Release.Name }}-sapporo-workflows
 {{- end }}

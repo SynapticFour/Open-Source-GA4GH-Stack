@@ -24,9 +24,16 @@ class LsLoginConfig(BaseModel):
     redirect_uri: str | None = None
 
 
+class KeycloakConfig(BaseModel):
+    """OIDC issuer (realm) base URL for oauth2-proxy, e.g. ``http://keycloak:8080/realms/master``."""
+
+    issuer_url: str = "http://keycloak:8080/realms/master"
+
+
 class AuthConfig(BaseModel):
     provider: AuthProvider = "none"
     ls_login: LsLoginConfig | None = None
+    keycloak: KeycloakConfig | None = None
 
 
 class BeaconServiceConfig(BaseModel):

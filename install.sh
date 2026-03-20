@@ -30,5 +30,6 @@ fi
 
 echo ""
 echo "GA4GH Community Stack installiert."
-echo "Starte mit: lab-stack init"
-echo "Dokumentation: https://ga4gh-community-stack.synapticfour.dev"
+echo "Lege ein Projektverzeichnis an, z. B.: mkdir ~/ga4gh-lab && cd ~/ga4gh-lab"
+echo "Starte mit: lab-stack init && lab-stack generate compose"
+echo "Repo & Docs: https://github.com/SynapticFour/Open-Source-GA4GH-Stack"

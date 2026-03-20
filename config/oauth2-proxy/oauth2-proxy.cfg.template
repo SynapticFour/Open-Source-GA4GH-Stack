@@ -2,7 +2,7 @@
 # Limit: not GA4GH Passport-aware; see docs/LIMITATIONS.md
 
 provider = "oidc"
-oidc_issuer_url = "https://login.elixir-czech.org/oidc/"
+oidc_issuer_url = "{{ oidc_issuer_url }}"
 client_id = "{{ ls_login_client_id }}"
 client_secret = "{{ ls_login_client_secret }}"
 redirect_url = "{{ redirect_url }}"

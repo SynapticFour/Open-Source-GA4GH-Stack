@@ -1,17 +1,17 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import click
 import questionary
 import yaml
 from rich.console import Console
 
 from community_stack.config import StackConfig
-from community_stack.paths import find_repo_root
 
 
 def run_init_wizard() -> None:
-    repo = find_repo_root()
-    dest = repo / "stack.yml"
+    dest = Path.cwd() / "stack.yml"
 
     lab_name = questionary.text("Lab name:", default="Community Stack Lab").ask()
     if lab_name is None:
@@ -27,7 +27,7 @@ def run_init_wizard() -> None:
                 value="none",
             ),
             questionary.Choice("ELIXIR LS Login (OIDC)", value="ls-login"),
-            questionary.Choice("Keycloak (placeholders only)", value="keycloak"),
+            questionary.Choice("Keycloak (local/dev compose fragment + OIDC)", value="keycloak"),
         ],
     ).ask()
     if auth is None:
@@ -52,6 +52,7 @@ def run_init_wizard() -> None:
     tls = bool(tls_raw)
 
     ls_block = None
+    kc_block = None
     if auth == "ls-login":
         cid_r = questionary.text("LS Login client_id:").ask()
         csec_r = questionary.password("LS Login client_secret:").ask()
@@ -62,12 +63,40 @@ def run_init_wizard() -> None:
         ls_block = {
             "client_id": cid,
             "client_secret": csec,
-            "redirect_uri": f"https://{host}/oauth2/callback" if tls else f"http://{host}/oauth2/callback",
+            "redirect_uri": f"https://{host}/oauth2/callback"
+            if tls
+            else f"http://{host}/oauth2/callback",
         }
+    elif auth == "keycloak":
+        cid_r = questionary.text("Keycloak OIDC client_id:").ask()
+        csec_r = questionary.password("Keycloak OIDC client_secret:").ask()
+        if cid_r is None or csec_r is None:
+            raise click.Abort()
+        cid = cid_r or "replace-me"
+        csec = csec_r or "replace-me"
+        ls_block = {
+            "client_id": cid,
+            "client_secret": csec,
+            "redirect_uri": f"https://{host}/oauth2/callback"
+            if tls
+            else f"http://{host}/oauth2/callback",
+        }
+        default_issuer = f"http://{host}:8080/realms/master"
+        iss_r = questionary.text(
+            "Keycloak issuer URL (realm, no trailing slash)",
+            default=default_issuer,
+        ).ask()
+        if iss_r is None:
+            raise click.Abort()
+        kc_block = {"issuer_url": (iss_r or default_issuer).rstrip("/")}
 
     data = {
         "lab": {"name": lab_name or "Community Stack Lab", "contact": contact},
-        "auth": {"provider": auth, "ls_login": ls_block},
+        "auth": {
+            "provider": auth,
+            "ls_login": ls_block,
+            "keycloak": kc_block,
+        },
         "services": {
             "beacon": {
                 "enabled": bool(beacon_on),
@@ -85,6 +114,6 @@ def run_init_wizard() -> None:
         "deploy": {"target": "compose", "host": host or host_default, "tls": bool(tls)},
     }
 
-    StackConfig.model_validate(data)  # sanity check
+    StackConfig.model_validate(data)
     dest.write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=True), encoding="utf-8")
     Console().print(f"[green]Wrote[/green] {dest}\nNächster Schritt: lab-stack generate compose")

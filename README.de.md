@@ -21,10 +21,13 @@ Dieses Projekt ist **kein** „billiger Ersatz“ für integrierte Komplett-Lös
 ```bash
 pip install ga4gh-community-stack    # oder: ./install.sh (wenn auf PyPI)
 pip install -e "./cli[dev]"          # aus dem Repo
+mkdir ~/ga4gh-lab && cd ~/ga4gh-lab   # bei pip-Install: schreibbares Projektverzeichnis
 lab-stack init
 lab-stack demo start
 # http://localhost:5050/ga4gh/beacon/v2
 ```
+
+Das Paket enthält Templates & Compose-Fragmente im Wheel (`community_stack/_bundled/`). Details: [docs/RELEASING.md](docs/RELEASING.md).
 
 ---
 

@@ -8,7 +8,7 @@ import httpx
 from rich.console import Console
 
 from community_stack.generate import run_generate_compose
-from community_stack.paths import find_repo_root
+from community_stack.paths import default_project_output_dir, find_assets_root
 
 
 def _read_mongo_password(env_file: Path) -> str:
@@ -79,14 +79,22 @@ def wait_for_beacon(url: str, timeout_s: float = 60.0) -> None:
     raise RuntimeError(msg)
 
 
+def _resolve_stack_yaml(project_dir: Path) -> Path | None:
+    for candidate in (Path.cwd() / "stack.yml", project_dir / "stack.yml"):
+        if candidate.is_file():
+            return candidate
+    return None
+
+
 def run_demo_start() -> None:
-    repo = find_repo_root()
-    profile = repo / "config" / "profiles" / "beacon-only.env"
+    assets = find_assets_root()
+    project_dir = default_project_output_dir(assets)
+    profile = assets / "config" / "profiles" / "beacon-only.env"
     compose_path = run_generate_compose(
-        repo_root=repo,
-        stack_yaml=repo / "stack.yml" if (repo / "stack.yml").is_file() else None,
+        assets_root=assets,
+        stack_yaml=_resolve_stack_yaml(project_dir),
         profile_path=profile,
-        output_dir=repo,
+        output_dir=project_dir,
         demo_mode=True,
     )
 
@@ -97,7 +105,7 @@ def run_demo_start() -> None:
             "-f",
             str(compose_path),
             "--project-directory",
-            str(repo),
+            str(project_dir),
             "up",
             "-d",
         ],
@@ -105,7 +113,7 @@ def run_demo_start() -> None:
     )
 
     wait_for_beacon("http://localhost:5050/ga4gh/beacon/v2/service-info")
-    run_demo_seed(project_dir=repo, compose_file=compose_path)
+    run_demo_seed(project_dir=project_dir, compose_file=compose_path)
 
     Console().print(
         "[green]Beacon v2[/green] läuft auf: "
@@ -117,13 +125,15 @@ def run_demo_start() -> None:
 
 
 def run_demo_seed_only() -> None:
-    repo = find_repo_root()
-    compose_path = repo / "docker-compose.generated.yml"
-    if not compose_path.is_file():
-        msg = (
-            "docker-compose.generated.yml nicht gefunden — zuerst "
-            "'lab-stack generate compose' oder 'lab-stack demo start' ausführen."
-        )
-        raise FileNotFoundError(msg)
-    run_demo_seed(project_dir=repo, compose_file=compose_path)
-    Console().print("[green]Demo-Daten eingespielt.[/green]")
+    assets = find_assets_root()
+    for base in (Path.cwd(), default_project_output_dir(assets)):
+        compose_path = base / "docker-compose.generated.yml"
+        if compose_path.is_file():
+            run_demo_seed(project_dir=base, compose_file=compose_path)
+            Console().print("[green]Demo-Daten eingespielt.[/green]")
+            return
+    msg = (
+        "docker-compose.generated.yml nicht gefunden — zuerst "
+        "'lab-stack generate compose' oder 'lab-stack demo start' ausführen."
+    )
+    raise FileNotFoundError(msg)

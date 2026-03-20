@@ -1,0 +1,15 @@
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-sapporo-workflows
+data:
+  executable_workflows.json: |
+    [
+      {
+        "workflow_type": "Nextflow",
+        "workflow_type_version": "23.10.0",
+        "workflow_url": "https://example.com/workflows/placeholder.nf"
+      }
+    ]
+{{- end }}

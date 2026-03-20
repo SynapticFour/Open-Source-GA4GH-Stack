@@ -1,0 +1,28 @@
+name: Helm
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: helm dependency build + template
+        working-directory: deploy/helm
+        run: |
+          helm dependency build .
+          helm template cs-test . \
+            -f values.yaml \
+            --set beacon.enabled=true \
+            --set wes.enabled=true \
+            --set oauth2Proxy.enabled=false \
+            --set caddy.enabled=false

@@ -1,0 +1,15 @@
+# Optional: local Keycloak (dev). Use with auth.provider: keycloak in stack.yml.
+# Create an OIDC client in the realm and set client_id / client_secret (stack or .env).
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.5
+    command: ["start-dev"]
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-changeme}
+      KC_HTTP_PORT: "8080"
+      KC_HOSTNAME_STRICT: "false"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

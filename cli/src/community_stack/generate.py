@@ -8,12 +8,12 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from community_stack.compose_merge import dump_compose, merge_compose_files
 from community_stack.config import StackConfig, merge_profile_env
-from community_stack.paths import find_repo_root
+from community_stack.paths import default_project_output_dir, find_assets_root
 
 
 @dataclass(frozen=True)
 class GenerateContext:
-    repo_root: Path
+    assets_root: Path
     output_dir: Path
     stack: StackConfig
     profile: dict[str, str]
@@ -56,12 +56,24 @@ def oauth_upstream(cfg: StackConfig) -> str:
     return "http://caddy:80"
 
 
+def oidc_issuer_for_stack(stack: StackConfig) -> str:
+    if stack.auth.provider == "keycloak":
+        kc = stack.auth.keycloak
+        base = (
+            kc.issuer_url
+            if kc is not None
+            else "http://keycloak:8080/realms/master"
+        ).rstrip("/")
+        return f"{base}/"
+    return "https://login.elixir-czech.org/oidc/"
+
+
 def mongo_password(profile: dict[str, str]) -> str:
     return profile.get("MONGO_PASSWORD", "changeme")
 
 
-def render_template(repo_root: Path, rel_template: str, out_path: Path, **ctx: object) -> None:
-    tmpl_dir = repo_root / Path(rel_template).parent
+def render_template(assets_root: Path, rel_template: str, out_path: Path, **ctx: object) -> None:
+    tmpl_dir = assets_root / Path(rel_template).parent
     tmpl_name = Path(rel_template).name
     env = Environment(
         loader=FileSystemLoader(str(tmpl_dir)),
@@ -74,8 +86,8 @@ def render_template(repo_root: Path, rel_template: str, out_path: Path, **ctx: o
     out_path.write_text(tpl.render(**ctx), encoding="utf-8")
 
 
-def ensure_demo_data(repo_root: Path, output_dir: Path) -> None:
-    src = repo_root / "data" / "demo"
+def ensure_demo_data(assets_root: Path, output_dir: Path) -> None:
+    src = assets_root / "data" / "demo"
     dst = output_dir / "data" / "demo"
     if src.resolve() == dst.resolve():
         return
@@ -102,8 +114,8 @@ def write_dotenv(output_dir: Path, profile: dict[str, str], stack: StackConfig) 
     (output_dir / ".env").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def build_compose_fragment_paths(repo_root: Path, ctx: GenerateContext) -> list[Path]:
-    base = repo_root / "deploy" / "docker-compose"
+def build_compose_fragment_paths(assets_root: Path, ctx: GenerateContext) -> list[Path]:
+    base = assets_root / "deploy" / "docker-compose"
     paths: list[Path] = []
     if include_base_from_stack(ctx.stack, ctx.profile):
         paths.append(base / "docker-compose.base.yml")
@@ -115,11 +127,13 @@ def build_compose_fragment_paths(repo_root: Path, ctx: GenerateContext) -> list[
         paths.append(base / "docker-compose.tes.yml")
     if ctx.stack.services.drs.enabled:
         paths.append(base / "docker-compose.drs.yml")
+    if ctx.stack.auth.provider == "keycloak":
+        paths.append(base / "docker-compose.keycloak.yml")
     return paths
 
 
 def generate_compose(ctx: GenerateContext) -> Path:
-    repo = ctx.repo_root
+    repo = ctx.assets_root
     out = ctx.output_dir
     stack = ctx.stack
     profile = ctx.profile
@@ -194,6 +208,7 @@ def generate_compose(ctx: GenerateContext) -> Path:
         cookie_secure="true" if stack.deploy.tls else "false",
         demo_skip_auth=ctx.demo_skip_auth,
         oauth_upstream=oauth_upstream(stack),
+        oidc_issuer_url=oidc_issuer_for_stack(stack),
     )
 
     if stack.services.tes.enabled:
@@ -291,18 +306,18 @@ def demo_skip_auth_flag(profile: dict[str, str], explicit_demo: bool) -> bool:
 
 def run_generate_compose(
     *,
-    repo_root: Path | None,
+    assets_root: Path | None,
     stack_yaml: Path | None,
     profile_path: Path | None,
     output_dir: Path | None,
     demo_mode: bool,
 ) -> Path:
-    root = repo_root or find_repo_root()
-    out = output_dir or root
+    root = assets_root or find_assets_root()
+    out = output_dir if output_dir is not None else default_project_output_dir(root)
     cfg, profile = resolve_stack_config(stack_yaml, profile_path, demo_mode=demo_mode)
     skip_auth = demo_skip_auth_flag(profile, explicit_demo=demo_mode)
     ctx = GenerateContext(
-        repo_root=root,
+        assets_root=root,
         output_dir=out,
         stack=cfg,
         profile=profile,

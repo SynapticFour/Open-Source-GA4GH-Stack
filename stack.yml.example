@@ -8,6 +8,14 @@ auth:
     client_id: "replace-me"
     client_secret: "replace-me"
     redirect_uri: "https://beacon.lab.example.org/oauth2/callback"
+  # For local Keycloak instead of LS Login:
+  # provider: keycloak
+  # ls_login:
+  #   client_id: "replace-me"
+  #   client_secret: "replace-me"
+  #   redirect_uri: "https://beacon.lab.example.org/oauth2/callback"
+  # keycloak:
+  #   issuer_url: "http://localhost:8080/realms/master"
 
 services:
   beacon:
