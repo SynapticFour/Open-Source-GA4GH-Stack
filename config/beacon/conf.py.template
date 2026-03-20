@@ -18,7 +18,10 @@ beacon_id = "{{ beacon_id }}"
 beacon_name = "{{ beacon_name }}"
 api_version = "v2.2.0"
 uri = "{{ beacon_uri }}"
-uri_subpath = "/api"
+# Upstream beacon2-pi-api serves all endpoints under `uri_subpath`.
+# This stack (smoke tests / caddy / HelixTest) expects GA4GH v2 paths at:
+#   /ga4gh/beacon/v2/...
+uri_subpath = "/ga4gh/beacon/v2"
 complete_url = uri + uri_subpath
 environment = "test"
 description = r"{{ beacon_description }}"

@@ -67,6 +67,29 @@ jobs:
           docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs logs --no-color --tail=200 beacon mongodb || true
           exit 0
 
+      - name: Seed Beacon demo data into MongoDB
+        if: steps.wait.outputs.beacon_ready == 'true'
+        run: |
+          # Seed the minimal demo collections that HelixTest queries.
+          # This mirrors `lab-stack demo seed` / `run_demo_seed` behavior.
+          MONGO_PASSWORD="$(awk -F= '$1=="MONGO_PASSWORD"{print $2; exit}' /tmp/ga4gh-cs/.env)"
+
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs exec -T mongodb mongoimport \
+            --authenticationDatabase admin -u root -p "$MONGO_PASSWORD" \
+            --db beacon --collection datasets --jsonArray --file /demo/datasets.json
+
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs exec -T mongodb mongoimport \
+            --authenticationDatabase admin -u root -p "$MONGO_PASSWORD" \
+            --db beacon --collection cohorts --jsonArray --file /demo/cohorts.json
+
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs exec -T mongodb mongoimport \
+            --authenticationDatabase admin -u root -p "$MONGO_PASSWORD" \
+            --db beacon --collection individuals --jsonArray --file /demo/individuals.json
+
+          docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs exec -T mongodb mongoimport \
+            --authenticationDatabase admin -u root -p "$MONGO_PASSWORD" \
+            --db beacon --collection genomicVariations --jsonArray --file /demo/genomicVariations.json
+
       - name: Beacon diagnostics on failure
         if: failure()
         run: |
@@ -89,12 +112,31 @@ jobs:
           BEACON_URL: http://localhost:5050/ga4gh/beacon/v2
         run: |
           cd helixtest-upstream/helixtest
+          outfile=/tmp/helix-report-phase1.json
+          rm -f "$outfile"
+
+          # stdout goes to the JSON report file; stdout/stderr may otherwise be quiet.
           cargo run --bin helixtest -- \
             --all \
-            --mode generic \
+            --mode ferrum \
             --only beacon \
+            --verbose \
             --report json \
-            --fail-level 0 > /tmp/helix-report-phase1.json
+            --fail-level 0 > "$outfile" &
+
+          pid=$!
+          # While HelixTest runs, periodically tail the stdout report file
+          # so GitHub UI shows progress rather than looking "stuck".
+          while kill -0 "$pid" 2>/dev/null; do
+            echo "---- HelixTest stdout tail ----"
+            if [ -s "$outfile" ]; then
+              tail -n 30 "$outfile" || true
+            else
+              echo "(no stdout yet)"
+            fi
+            sleep 20
+          done
+          wait "$pid"
 
       - name: Upload HelixTest report
         if: always()
