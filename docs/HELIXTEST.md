@@ -29,7 +29,7 @@ Rough sequence:
 7. Upload **`helix-report-phase1`** artifact (JSON report path in workflow: `/tmp/helix-report-phase1.json`).
 8. **Tear down** Compose (`down -v`).
 
-The HelixTest step uses **`continue-on-error: true`** so a failing report does not block the workflow; the artifact still captures the outcome.
+The HelixTest step uses **`continue-on-error: true`** and ends with **`exit 0`** after **`wait`**, so GitHub shows the step **green** when HelixTest exits **`1`** due to failed cases (HelixTest treats **any** failed case as exit **1**; **`--fail-level 0`** only relaxes the *overall level* gate, not per-case failures). **Cargo** build failures (typically exit **101**) still fail the step. The artifact always captures the JSON outcome when the binary printed it.
 
 ### Phase 2 — WES (Sapporo)
 
@@ -49,7 +49,7 @@ Rough sequence:
 
 **`WES_URL`** for this stack is **`http://localhost:1122`** (no `/ga4gh/wes/v1` prefix): HelixTest calls `{WES_URL}/service-info`, `{WES_URL}/runs`, etc.
 
-**Expectations:** HelixTest’s WES suite submits **`trs://…`** workflow references and assumes a **TRS-aligned** tool registry. **Vanilla Sapporo** will often **fail** lifecycle / error-state cases even when **`service-info`** is healthy. The job is **`continue-on-error: true`** so CI stays green while the JSON report records gaps.
+**Expectations:** HelixTest’s WES suite submits **`trs://…`** workflow references and assumes a **TRS-aligned** tool registry. **Vanilla Sapporo** will often **fail** lifecycle / error-state cases even when **`service-info`** is healthy. The workflow uses **`continue-on-error: true`** and **`exit 0`** after the run (same semantics as Phase 1) so the job stays green while the JSON artifact records gaps.
 
 **Why `--mode generic`:** With **`WES_URL`** set, generic mode’s initial **`/service-info`** probe hits Sapporo quickly. If the response does not identify itself as Ferrum, checks stay on the **generic** path (appropriate for Sapporo).
 

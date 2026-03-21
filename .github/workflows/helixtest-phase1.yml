@@ -137,6 +137,15 @@ jobs:
             sleep 20
           done
           wait "$pid"
+          ec=$?
+          if [ "$ec" -eq 101 ]; then
+            echo "::error::Cargo failed to build or run HelixTest (exit 101)"
+            exit 101
+          fi
+          if [ "$ec" -ne 0 ]; then
+            echo "::warning::HelixTest exited with $ec; see artifact helix-report-phase1"
+          fi
+          exit 0
 
       - name: Upload HelixTest report
         if: always()
