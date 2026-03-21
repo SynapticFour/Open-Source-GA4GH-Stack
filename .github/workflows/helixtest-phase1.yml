@@ -136,8 +136,8 @@ jobs:
             fi
             sleep 20
           done
-          wait "$pid"
-          ec=$?
+          ec=0
+          wait "$pid" || ec=$?
           if [ "$ec" -eq 101 ]; then
             echo "::error::Cargo failed to build or run HelixTest (exit 101)"
             exit 101

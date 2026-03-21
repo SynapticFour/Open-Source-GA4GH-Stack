@@ -29,7 +29,7 @@ Rough sequence:
 7. Upload **`helix-report-phase1`** artifact (JSON report path in workflow: `/tmp/helix-report-phase1.json`).
 8. **Tear down** Compose (`down -v`).
 
-The HelixTest step uses **`continue-on-error: true`** and ends with **`exit 0`** after **`wait`**, so GitHub shows the step **green** when HelixTest exits **`1`** due to failed cases (HelixTest treats **any** failed case as exit **1**; **`--fail-level 0`** only relaxes the *overall level* gate, not per-case failures). **Cargo** build failures (typically exit **101**) still fail the step. The artifact always captures the JSON outcome when the binary printed it.
+The HelixTest step uses **`continue-on-error: true`**, captures the child exit with **`ec=0; wait "$pid" || ec=$?`** (required because GHA’s default shell is **`bash -e`**: a plain **`wait`** on a failing process would **terminate the script** before any **`ec=$?`** line runs), then ends with **`exit 0`** for conformance failures. HelixTest exits **`1`** when any case fails (**`--fail-level 0`** only relaxes the *overall level* gate). **Cargo** build failures (typically exit **101**) still fail the step. The artifact captures the JSON when the binary printed it.
 
 ### Phase 2 — WES (Sapporo)
 

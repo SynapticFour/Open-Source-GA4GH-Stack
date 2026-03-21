@@ -114,8 +114,10 @@ jobs:
             fi
             sleep 25
           done
-          wait "$pid"
-          ec=$?
+          # Default GHA bash is `bash -e`: `wait` with non-zero child exit aborts the script
+          # before the next line — so capture status with `|| ec=$?` instead of `ec=$?` after wait.
+          ec=0
+          wait "$pid" || ec=$?
           # HelixTest exits 1 when any case fails; --fail-level 0 does not change that.
           # Treat conformance gaps as non-blocking; fail only on Cargo/build errors (~101).
           if [ "$ec" -eq 101 ]; then
