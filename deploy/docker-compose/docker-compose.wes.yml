@@ -10,6 +10,9 @@ services:
     environment:
       - SAPPORO_HOST=0.0.0.0
       - SAPPORO_PORT=1122
+      # Default run_dir is CWD/runs (/app/runs); that path is not volume-backed here.
+      # SQLite index DB lives at {run_dir}/sapporo.db — must match the mounted volume.
+      - SAPPORO_RUN_DIR=/opt/sapporo/runs
     restart: unless-stopped
 
 volumes:

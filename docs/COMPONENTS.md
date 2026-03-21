@@ -18,7 +18,7 @@ Exact versions and images are pinned in the root **README** and Compose fragment
 - **Image:** `ghcr.io/sapporo-wes/sapporo-service:latest`
 - **Spec:** WES **1.1.0** (per upstream Sapporo 2.x line)
 - **Engines:** Nextflow, Snakemake, CWL (`cwltool`), WDL (Cromwell), Toil (see Sapporo docs)
-- **Config:** `executable_workflows.json` + environment (`SAPPORO_HOST`, `SAPPORO_PORT`).
+- **Config:** `executable_workflows.json` + environment (`SAPPORO_HOST`, `SAPPORO_PORT`, **`SAPPORO_RUN_DIR`** — must point at a **writable** directory; Compose uses `/opt/sapporo/runs` with a named volume so SQLite `sapporo.db` can be created).
 - **Port:** `1122` (Swagger UI typically at `/docs` when enabled upstream).
 
 ## TES — Funnel

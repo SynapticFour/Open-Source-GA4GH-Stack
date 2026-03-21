@@ -9,6 +9,8 @@ WorkingDirectory=/opt/sapporo
 ExecStart=/usr/local/bin/uvicorn sapporo.app:app --host 0.0.0.0 --port 1122
 Restart=on-failure
 Environment=HOME=/home/sapporo
+# Writable run directory (SQLite sapporo.db + per-run folders); default is CWD/runs.
+Environment=SAPPORO_RUN_DIR=/opt/sapporo/runs
 
 [Install]
 WantedBy=multi-user.target
