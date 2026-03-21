@@ -10,7 +10,7 @@ Exact versions and images are pinned in the root **README** and Compose fragment
 - **Config:** Python module at `beacon/conf/conf.py` (mounted from `config/beacon/conf.py` in this kit). **Mongo connection** is via `beacon/connections/mongo/conf.env` (mounted from `config/beacon/mongo/conf.env`).
 - **Ingest:** [beacon2-ri-tools-v2](https://github.com/EGA-archive/beacon2-ri-tools-v2)
 - **Ports:** `5050` (HTTP API), Mongo `27017` internal to Compose network.
-- **HelixTest (CI / local):** see [HELIXTEST.md](HELIXTEST.md) for `BEACON_URL`, `/ga4gh/beacon/v2` paths, and `--mode ferrum`.
+- **HelixTest (CI / local):** see [HELIXTEST.md](HELIXTEST.md) for Phase 1 (`BEACON_URL`, `/ga4gh/beacon/v2`, `--mode ferrum`) and Phase 2 WES (`WES_URL`, Sapporo on `:1122`).
 
 ## WES — Sapporo
 

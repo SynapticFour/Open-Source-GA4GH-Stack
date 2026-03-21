@@ -1,0 +1,131 @@
+name: HelixTest Phase 2 (WES)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  sapporo-wes-subset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CLI
+        run: pip install -e "./cli"
+
+      - name: Generate compose (Beacon + WES profile)
+        run: |
+          lab-stack generate compose \
+            --config config/profiles/beacon-wes.env \
+            --output /tmp/ga4gh-cs-wes
+
+      - name: Validate compose file
+        run: |
+          docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml \
+            --project-directory /tmp/ga4gh-cs-wes config
+
+      - name: Start Sapporo (WES)
+        run: |
+          docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml \
+            --project-directory /tmp/ga4gh-cs-wes up -d sapporo
+
+      - name: Wait for WES service-info
+        id: wait
+        continue-on-error: true
+        run: |
+          ready=false
+          attempts=60
+          check_every=6
+          for i in $(seq 1 $attempts); do
+            if curl -fsS http://localhost:1122/service-info >/dev/null; then
+              ready=true
+              break
+            fi
+            echo "[wait] WES (Sapporo) not ready yet (attempt ${i}/${attempts}), sleeping 5s"
+            if [ $((i % check_every)) -eq 0 ]; then
+              echo "---- Sapporo container state (checkpoint ${i}/${attempts}) ----"
+              docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs-wes ps -a || true
+              echo "---- Sapporo logs (checkpoint ${i}/${attempts}) ----"
+              docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs-wes logs --no-color --tail=80 sapporo || true
+            fi
+            sleep 5
+          done
+
+          if [ "$ready" = "true" ]; then
+            echo "wes_ready=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "wes_ready=false" >> "$GITHUB_OUTPUT"
+          echo "Sapporo did not expose /service-info within $((attempts*5))s"
+          docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs-wes ps -a || true
+          docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs-wes logs --no-color --tail=200 sapporo || true
+          exit 0
+
+      - name: WES diagnostics on failure
+        if: failure()
+        run: |
+          docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs-wes ps || true
+          docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs-wes logs --no-color sapporo || true
+
+      - name: Checkout HelixTest
+        uses: actions/checkout@v4
+        with:
+          repository: SynapticFour/HelixTest
+          path: helixtest-upstream
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run HelixTest (phase 2, WES only, non-blocking)
+        if: steps.wait.outputs.wes_ready == 'true'
+        continue-on-error: true
+        env:
+          # Sapporo serves GA4GH WES at host root (see sapporo docs): /service-info, /runs, …
+          WES_URL: http://localhost:1122
+        run: |
+          cd helixtest-upstream/helixtest
+          outfile=/tmp/helix-report-phase2-wes.json
+          rm -f "$outfile"
+
+          cargo run --bin helixtest -- \
+            --all \
+            --mode generic \
+            --only wes \
+            --verbose \
+            --report json \
+            --fail-level 0 > "$outfile" &
+
+          pid=$!
+          while kill -0 "$pid" 2>/dev/null; do
+            echo "---- HelixTest stdout tail ----"
+            if [ -s "$outfile" ]; then
+              tail -n 30 "$outfile" || true
+            else
+              echo "(no stdout yet)"
+            fi
+            sleep 25
+          done
+          wait "$pid"
+
+      - name: Upload HelixTest report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: helix-report-phase2-wes
+          path: /tmp/helix-report-phase2-wes.json
+          if-no-files-found: warn
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml \
+            --project-directory /tmp/ga4gh-cs-wes down -v

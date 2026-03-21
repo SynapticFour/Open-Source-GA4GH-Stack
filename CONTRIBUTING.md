@@ -26,7 +26,7 @@ mypy src/ --strict
 
 ## Conformance (HelixTest)
 
-Phase 1 Beacon checks run in [`.github/workflows/helixtest-phase1.yml`](.github/workflows/helixtest-phase1.yml). How to reproduce locally, URL schema, and env vars: **[docs/HELIXTEST.md](docs/HELIXTEST.md)**.
+HelixTest CI: Phase 1 Beacon in [`.github/workflows/helixtest-phase1.yml`](.github/workflows/helixtest-phase1.yml), Phase 2 WES (Sapporo) in [`.github/workflows/helixtest-phase2-wes.yml`](.github/workflows/helixtest-phase2-wes.yml). How to reproduce locally, URL schema, and env vars: **[docs/HELIXTEST.md](docs/HELIXTEST.md)**.
 
 ## Releases
 
