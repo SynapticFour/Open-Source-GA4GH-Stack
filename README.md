@@ -94,4 +94,4 @@ export GA4GH_COMMUNITY_STACK_ROOT=/path/to/ga4gh-community-stack
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). CI runs `pytest`, `ruff`, and `mypy --strict` on Python 3.11 and 3.12.
 
-Documentation index: **[docs/COMPONENTS.md](docs/COMPONENTS.md)**, **[docs/ELIXIR-AAI.md](docs/ELIXIR-AAI.md)**, **[docs/SLURM-SETUP.md](docs/SLURM-SETUP.md)**.
+Documentation index: **[docs/COMPONENTS.md](docs/COMPONENTS.md)**, **[docs/HELIXTEST.md](docs/HELIXTEST.md)** (HelixTest / Beacon Phase 1), **[docs/ELIXIR-AAI.md](docs/ELIXIR-AAI.md)**, **[docs/SLURM-SETUP.md](docs/SLURM-SETUP.md)**.

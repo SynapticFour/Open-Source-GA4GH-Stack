@@ -24,6 +24,10 @@ mypy src/ --strict
 - For behaviour changes, update relevant docs (`docs/`, `README.md`).
 - CI runs tests, Ruff, and mypy on Python 3.11 and 3.12.
 
+## Conformance (HelixTest)
+
+Phase 1 Beacon checks run in [`.github/workflows/helixtest-phase1.yml`](.github/workflows/helixtest-phase1.yml). How to reproduce locally, URL schema, and env vars: **[docs/HELIXTEST.md](docs/HELIXTEST.md)**.
+
 ## Releases
 
 See [docs/RELEASING.md](docs/RELEASING.md) for wheel layout, PyPI trusted publishing, and version bumps.
