@@ -4,6 +4,8 @@ A curated deployment kit built from the best available **open-source GA4GH imple
 
 This repository is **not** a drop-in competitor to **Ferrum Lab Kit** (or similar commercial / integrated kits): it is the curated **open-source side** of the same architectural goals (Compose, Helm, SLURM/HPC). See **[COMPARISON.md](COMPARISON.md)** for a side-by-side view and **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)** for where OSS integrations stop short of unified, passport-aware products.
 
+This documentation describes technical capabilities and integration limits. It does not constitute legal advice or a formal compliance certification for any jurisdiction.
+
 **License:** MIT (this repo). **Upstream images:** MIT or Apache-2.0 as listed below. **Maintainer:** [Synaptic Four](https://synapticfour.dev).
 
 ---
@@ -13,7 +15,7 @@ This repository is **not** a drop-in competitor to **Ferrum Lab Kit** (or simila
 From a clone of this repository (Docker required):
 
 ```bash
-cd ga4gh-community-stack
+cd Open-Source-GA4GH-Stack
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e "./cli[dev]"   # or: pip install ga4gh-community-stack (when published)
 lab-stack init
@@ -53,7 +55,7 @@ Ingest tooling for Beacon: [beacon2-ri-tools-v2](https://github.com/EGA-archive/
 
 ## Capabilities vs limitations
 
-**Strengths:** production-trusted Beacon and WES components, mature TES/SLURM story with Funnel, fully OSS, no license gate.
+**Strengths:** production-trusted Beacon and WES components, mature TES/SLURM story with Funnel, open-source-first architecture with transparent per-component licensing.
 
 **Gaps (honest):** no built-in **GA4GH Passport / visa** enforcement at the edge; **heterogeneous config formats** per service; **DRS 1.3.0-experimental** in Starter Kit vs newer spec expectations elsewhere; no bundled **RO-Crate / provenance DAG** across WES↔DRS. Details: **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)**.
 
