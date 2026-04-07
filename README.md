@@ -4,7 +4,7 @@ A curated deployment kit built from the best available **open-source GA4GH imple
 
 This repository is **not** a drop-in competitor to **Ferrum Lab Kit** (or similar commercial / integrated kits): it is the curated **open-source side** of the same architectural goals (Compose, Helm, SLURM/HPC). See **[COMPARISON.md](COMPARISON.md)** for a side-by-side view and **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)** for where OSS integrations stop short of unified, passport-aware products.
 
-This documentation describes technical capabilities and integration limits. It does not constitute legal advice or a formal compliance certification for any jurisdiction.
+> **Legal notice:** This repository documents technical capabilities and operating guidance. It is not legal advice and does not by itself provide regulatory certification or compliance guarantees. Compliance outcomes depend on operator configuration, contracts, and organisational controls.
 
 **License:** MIT (this repo). **Upstream images:** MIT or Apache-2.0 as listed below. **Maintainer:** [Synaptic Four](https://synapticfour.dev).
 
@@ -97,3 +97,14 @@ export GA4GH_COMMUNITY_STACK_ROOT=/path/to/ga4gh-community-stack
 See [CONTRIBUTING.md](CONTRIBUTING.md). CI runs `pytest`, `ruff`, and `mypy --strict` on Python 3.11 and 3.12.
 
 Documentation index: **[docs/COMPONENTS.md](docs/COMPONENTS.md)**, **[docs/HELIXTEST.md](docs/HELIXTEST.md)** (HelixTest / Beacon Phase 1), **[docs/ELIXIR-AAI.md](docs/ELIXIR-AAI.md)**, **[docs/SLURM-SETUP.md](docs/SLURM-SETUP.md)**.
+
+## Support
+
+Questions, responsible disclosure, or collaboration requests: [contact@synapticfour.com](mailto:contact@synapticfour.com).
+
+---
+
+Built by **Synaptic Four** for transparent, standards-based scientific infrastructure.
+Developed by a neurodiverse team, including autistic engineers, with a focus on precision, clarity, and reliable operations.
+Contact: [contact@synapticfour.com](mailto:contact@synapticfour.com) · [synapticfour.com](https://synapticfour.com)
+
