@@ -23,3 +23,13 @@ config/drs/drs.config.yml
 # Helm packaging
 deploy/helm/charts/*.tgz
 deploy/helm/Chart.lock
+
+# Generated artifacts and caches
+.svelte-kit/
+.astro/
+coverage/
+dist/
+build/
+target/
+.pytest_cache/
+.ruff_cache/
