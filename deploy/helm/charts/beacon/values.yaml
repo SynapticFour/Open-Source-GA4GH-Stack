@@ -1,5 +1,6 @@
 enabled: false
-image: ghcr.io/ega-archive/beacon2-pi-api:latest
+# Pinned with docker-compose (see deploy/docker-compose/docker-compose.beacon.yml).
+image: ghcr.io/ega-archive/beacon2-pi-api:v2.1.2
 mongo:
   image: mongo:5.0.32
   password: changeme

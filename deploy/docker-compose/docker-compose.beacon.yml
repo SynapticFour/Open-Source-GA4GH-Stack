@@ -1,6 +1,9 @@
 services:
   beacon:
-    image: ghcr.io/ega-archive/beacon2-pi-api:latest
+    # Pinned: v2.2.0+ runs `check_database_connections` at startup; the async Mongo
+    # ping can fail spuriously (see beacon2-pi-api beacon/utils/modules.py + ping.py).
+    # v2.1.2 does not perform that startup gate and matches this stack's GA4GH paths.
+    image: ghcr.io/ega-archive/beacon2-pi-api:v2.1.2
     # Upstream starts Beacon explicitly via `python -m beacon`.
     command: ["python", "-m", "beacon"]
     ports:
@@ -24,10 +27,16 @@ services:
       - mongo_data:/data/db
       - ./data/demo:/demo:ro
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      # Require auth + beacon DB (same as Beacon's PyMongo URI), not only localhost ping.
+      test:
+        [
+          "CMD-SHELL",
+          'mongosh -u "$$MONGO_INITDB_ROOT_USERNAME" -p "$$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin beacon --quiet --eval "db.runCommand({ ping: 1 })" || exit 1',
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 24
+      start_period: 45s
     restart: unless-stopped
 
 volumes:
