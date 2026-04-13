@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
@@ -98,7 +98,7 @@ jobs:
           docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs logs --no-color beacon mongodb || true
 
       - name: Checkout HelixTest
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: SynapticFour/HelixTest
           path: helixtest-upstream
@@ -150,7 +150,7 @@ jobs:
 
       - name: Upload HelixTest report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: helix-report-phase1
           path: /tmp/helix-report-phase1.json
