@@ -9,6 +9,7 @@ on:
 
 jobs:
   sapporo-wes-subset:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
