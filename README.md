@@ -6,7 +6,7 @@ This repository is **not** a drop-in competitor to **Ferrum Lab Kit** (or simila
 
 > **Legal notice:** This repository documents technical capabilities and operating guidance. It is not legal advice and does not by itself provide regulatory certification or compliance guarantees. Compliance outcomes depend on operator configuration, contracts, and organisational controls.
 
-**License:** MIT (this repo). **Upstream images:** MIT or Apache-2.0 as listed below. **Maintainer:** [Synaptic Four](https://synapticfour.dev).
+**License:** MIT (this repo). **Upstream images:** MIT or Apache-2.0 as listed below.
 
 ---
 
@@ -104,7 +104,6 @@ Questions, responsible disclosure, or collaboration requests: [contact@synapticf
 
 ---
 
-Built by **Synaptic Four** for transparent, standards-based scientific infrastructure.
-Developed by a neurodiverse team, including autistic engineers, with a focus on precision, clarity, and reliable operations.
-Contact: [contact@synapticfour.com](mailto:contact@synapticfour.com) · [synapticfour.com](https://synapticfour.com)
+Maintained as an open-source GA4GH deployment reference for transparent, standards-based scientific infrastructure.
+Contact: [contact@synapticfour.com](mailto:contact@synapticfour.com)
 

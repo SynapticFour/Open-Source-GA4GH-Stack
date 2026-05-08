@@ -35,7 +35,6 @@ jobs:
 
       - name: Wait for Beacon service-info
         id: wait
-        continue-on-error: true
         run: |
           ready=false
           attempts=120
@@ -108,7 +107,6 @@ jobs:
 
       - name: Run HelixTest (phase 1, beacon-only, non-blocking)
         if: steps.wait.outputs.beacon_ready == 'true'
-        continue-on-error: true
         env:
           BEACON_URL: http://localhost:5050/ga4gh/beacon/v2
         run: |

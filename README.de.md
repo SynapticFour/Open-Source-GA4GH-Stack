@@ -4,7 +4,7 @@
 
 Dieses Projekt ist **kein** „billiger Ersatz“ für integrierte Komplett-Lösungen wie das **Ferrum Lab Kit**. Es ist der **OSS-Referenzstack** mit derselben Deployment-Zielsetzung (Docker Compose, Helm, SLURM/HPC). Den dokumentierten Vergleich siehe [COMPARISON.md](COMPARISON.md); Grenzen und Lücken [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 
-**Maintainer:** [Synaptic Four](https://synapticfour.dev). **Lizenz:** MIT (dieses Repo); Upstream-Komponenten siehe Komponentenliste im [README.md](README.md) (englisch).
+**Lizenz:** MIT (dieses Repo); Upstream-Komponenten siehe Komponentenliste im [README.md](README.md) (englisch).
 
 ---
 

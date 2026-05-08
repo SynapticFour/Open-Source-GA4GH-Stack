@@ -1,25 +1,16 @@
-# Architecture Overview
+# Architecture
 
-This document explains the system at a level that helps contributors reason about change impact.
+This root document is an index for architecture-relevant references in this repository.
 
-## Goals
+## Primary references
 
-- Keep behavior predictable and testable.
-- Keep security and operational concerns explicit.
-- Keep extension points clear for new features.
+- `docs/COMPONENTS.md`: upstream services, versions, and integration points
+- `docs/LIMITATIONS.md`: known platform boundaries and operational trade-offs
+- `docs/SLURM-SETUP.md`: TES/Funnel execution model in HPC environments
+- `docs/ELIXIR-AAI.md`: identity and reverse-proxy integration model
 
-## High-level structure
+## Design principles
 
-Describe the major modules/services and their responsibilities here.
-
-## Data and control flows
-
-Describe how requests/events flow through the system and where validation, authorization, and persistence happen.
-
-## Reliability and security boundaries
-
-Describe trust boundaries, secret handling, and failure modes that contributors should keep in mind.
-
-## Key extension points
-
-List where new integrations, endpoints, or jobs should be added.
+- Keep composition explicit: each service remains traceable to an upstream project.
+- Prefer reproducible deployment artifacts over implicit local conventions.
+- Keep security and interoperability boundaries visible in docs and configuration.

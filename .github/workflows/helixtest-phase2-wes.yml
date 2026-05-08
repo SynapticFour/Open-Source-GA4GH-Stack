@@ -40,7 +40,6 @@ jobs:
 
       - name: Wait for WES service-info
         id: wait
-        continue-on-error: true
         run: |
           ready=false
           attempts=60
@@ -88,7 +87,6 @@ jobs:
 
       - name: Run HelixTest (phase 2, WES only, non-blocking)
         if: steps.wait.outputs.wes_ready == 'true'
-        continue-on-error: true
         env:
           # Sapporo serves GA4GH WES at host root (see sapporo docs): /service-info, /runs, …
           WES_URL: http://localhost:1122

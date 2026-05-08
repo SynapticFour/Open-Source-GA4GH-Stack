@@ -36,6 +36,6 @@ This page is meant for **decision support**, not marketing. Both stacks aim at *
 - You want a **maintenance-minimal**, **homogeneous** runtime for operations.
 - You need **packaged conformance** artefacts for ELIXIR / GHGA / GDI-style applications.
 
-## Synaptic Four’s stance
+## Project stance
 
-We maintain this Community Stack to **show both worlds fairly**: OSS strengths (transparency, no license gate) and OSS costs (integration, authZ limits, spec drift). The value is in **clarity**, not in claiming parity where it does not exist.
+This Community Stack is maintained to **show both worlds fairly**: OSS strengths (transparency, no license gate) and OSS costs (integration, authZ limits, spec drift). The value is in **clarity**, not in claiming parity where it does not exist.
