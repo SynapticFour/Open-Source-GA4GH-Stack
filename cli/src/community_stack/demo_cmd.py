@@ -124,6 +124,41 @@ def run_demo_start() -> None:
     )
 
 
+def _find_compose_project() -> tuple[Path, Path]:
+    """Return (project_dir, compose_path) for an existing generated demo."""
+    assets = find_assets_root()
+    for base in (Path.cwd(), default_project_output_dir(assets)):
+        compose_path = base / "docker-compose.generated.yml"
+        if compose_path.is_file():
+            return base, compose_path
+    msg = (
+        "docker-compose.generated.yml nicht gefunden — zuerst "
+        "'lab-stack demo start' ausführen."
+    )
+    raise FileNotFoundError(msg)
+
+
+def run_demo_stop(*, volumes: bool = False) -> None:
+    project_dir, compose_path = _find_compose_project()
+    args = [
+        "docker",
+        "compose",
+        "-f",
+        str(compose_path),
+        "--project-directory",
+        str(project_dir),
+        "down",
+        "--remove-orphans",
+    ]
+    if volumes:
+        args.append("-v")
+    subprocess.run(args, check=True)
+    if volumes:
+        Console().print("[green]Demo-Stack entfernt (Volumes gelöscht).[/green]")
+    else:
+        Console().print("[green]Demo gestoppt (Daten behalten).[/green]")
+
+
 def run_demo_seed_only() -> None:
     assets = find_assets_root()
     for base in (Path.cwd(), default_project_output_dir(assets)):
