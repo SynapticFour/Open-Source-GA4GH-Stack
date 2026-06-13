@@ -5,7 +5,7 @@ from pathlib import Path
 import click
 
 from community_stack.compare_cmd import open_comparison
-from community_stack.demo_cmd import run_demo_seed_only, run_demo_start
+from community_stack.demo_cmd import run_demo_seed_only, run_demo_start, run_demo_stop
 from community_stack.generate import run_generate_compose
 from community_stack.helm_gen import write_values
 from community_stack.init_wizard import run_init_wizard
@@ -119,6 +119,19 @@ def demo_group() -> None:
 def demo_start() -> None:
     """Generate compose, start containers, wait for Beacon, seed MongoDB."""
     run_demo_start()
+
+
+@demo_group.command("stop")
+@click.option("--volumes/--no-volumes", default=False, help="Also remove Docker volumes.")
+def demo_stop(volumes: bool) -> None:
+    """Stop the local Beacon demo stack."""
+    run_demo_stop(volumes=volumes)
+
+
+@demo_group.command("destroy")
+def demo_destroy() -> None:
+    """Stop demo stack and remove volumes."""
+    run_demo_stop(volumes=True)
 
 
 @demo_group.command("seed")

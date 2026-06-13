@@ -23,6 +23,14 @@ lab-stack demo start
 # Beacon: http://localhost:5050/ga4gh/beacon/v2
 ```
 
+Or with Make (after `make install`):
+
+```bash
+make up
+make down      # stop; keep data
+make destroy   # remove volumes
+```
+
 Or use `./install.sh` once the package is on PyPI (installs `lab-stack` into your user environment).
 
 ### Pip install only (no git clone)
@@ -71,6 +79,8 @@ Ingest tooling for Beacon: [beacon2-ri-tools-v2](https://github.com/EGA-archive/
 | `lab-stack generate systemd` | Copy SLURM-oriented units |
 | `lab-stack status` | HTTP health table for enabled services |
 | `lab-stack demo start` | Beacon + Mongo demo (uses `beacon-only.env`, demo-friendly oauth template) |
+| `lab-stack demo stop` | Stop demo stack; keep volumes |
+| `lab-stack demo destroy` | Stop demo stack; remove volumes |
 | `lab-stack demo seed` | Load `data/demo/*.json` into MongoDB |
 | `lab-stack compare` | Open `COMPARISON.md` in `$PAGER` |
 
