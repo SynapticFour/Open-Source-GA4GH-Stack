@@ -63,6 +63,20 @@ Nothing in this kit automatically records a **DAG** of “**which WES run read w
 
 ---
 
+## Limitation 6: WES / TES (and related) Compose images use `:latest` (known debt)
+
+Docker Compose and Helm values currently pull floating tags for several upstreams, including:
+
+- WES: `ghcr.io/sapporo-wes/sapporo-service:latest`
+- TES: `ohsucompbio/funnel:latest`
+- OIDC gate: `quay.io/oauth2-proxy/oauth2-proxy:latest`
+
+**Implication:** demos are convenient but **not reproducible** across time; upstream breakage can land without a deliberate bump. Pinning digests or release tags is tracked as known debt; prefer pins before any shared or long-lived deployment.
+
+**Ferrum Lab Kit (positioning):** version-pinned images in release artifacts.
+
+---
+
 ## What the Community Stack is genuinely good at
 
 - **Beacon v2:** `beacon2-pi-api` is widely exercised, plugin-capable (incl. EUCAIM / GA4GH models per upstream docs), and actively maintained by EGA.
