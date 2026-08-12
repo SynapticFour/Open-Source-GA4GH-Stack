@@ -1,8 +1,6 @@
 name: HelixTest Phase 2 (WES)
 
 on:
-  push:
-    branches: [main]
   schedule:
     - cron: '30 4 * * 1'
   workflow_dispatch: {}
