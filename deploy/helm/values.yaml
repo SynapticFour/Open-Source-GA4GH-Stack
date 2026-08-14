@@ -5,7 +5,8 @@ global:
 beacon:
   enabled: false
   image: ghcr.io/ega-archive/beacon2-pi-api:v2.1.2
-  mongo_password: changeme
+  mongo:
+    password: changeme
 
 wes:
   enabled: false
@@ -25,3 +26,4 @@ oauth2Proxy:
 
 caddy:
   enabled: false
+  site: example.org

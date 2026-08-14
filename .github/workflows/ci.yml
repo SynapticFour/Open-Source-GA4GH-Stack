@@ -15,12 +15,16 @@ jobs:
   python:
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install package
         run: pip install -e "./cli[dev]"
@@ -29,7 +33,7 @@ jobs:
         run: pytest cli/tests/
 
       - name: ruff
-        run: ruff check cli/src/
+        run: ruff check cli/src/ cli/tests/
 
       - name: mypy
         run: mypy cli/src/ --strict

@@ -1,2 +1,3 @@
 enabled: false
 image: ghcr.io/sapporo-wes/sapporo-service:latest
+engine: nextflow

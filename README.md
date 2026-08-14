@@ -74,8 +74,9 @@ Ingest tooling for Beacon: [beacon2-ri-tools-v2](https://github.com/EGA-archive/
 | Command | Purpose |
 |---------|---------|
 | `lab-stack init` | Interactive wizard → `stack.yml` |
+| `lab-stack generate` | Dispatch to compose / helm / systemd from `stack.yml` `deploy.target` |
 | `lab-stack generate compose` | Merge Compose fragments + render configs → `docker-compose.generated.yml` |
-| `lab-stack generate helm` | Emit Helm values → `deploy/helm/values.generated.yaml` |
+| `lab-stack generate helm` | Copy Helm charts + emit `deploy/helm/values.generated.yaml` |
 | `lab-stack generate systemd` | Copy SLURM-oriented units |
 | `lab-stack status` | HTTP health table for enabled services |
 | `lab-stack demo start` | Beacon + Mongo demo (uses `beacon-only.env`, demo-friendly oauth template) |
@@ -116,4 +117,3 @@ Questions, responsible disclosure, or collaboration requests: [contact@synapticf
 
 Maintained as an open-source GA4GH deployment reference for transparent, standards-based scientific infrastructure.
 Contact: [contact@synapticfour.com](mailto:contact@synapticfour.com)
-

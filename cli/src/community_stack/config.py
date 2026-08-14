@@ -6,6 +6,8 @@ from typing import Any, Literal
 import yaml
 from pydantic import BaseModel, Field, field_validator
 
+from community_stack.profile_env import parse_bool
+
 AccessLevel = Literal["public", "registered", "controlled"]
 AuthProvider = Literal["ls-login", "none", "keycloak"]
 WesEngine = Literal["nextflow", "snakemake", "cwl", "wdl"]
@@ -25,9 +27,12 @@ class LsLoginConfig(BaseModel):
 
 
 class KeycloakConfig(BaseModel):
-    """OIDC issuer (realm) base URL for oauth2-proxy, e.g. ``http://keycloak:8080/realms/master``."""
+    """OIDC issuer (realm) base URL and confidential client for oauth2-proxy."""
 
     issuer_url: str = "http://keycloak:8080/realms/master"
+    client_id: str = "replace-me"
+    client_secret: str = "replace-me"
+    redirect_uri: str | None = None
 
 
 class AuthConfig(BaseModel):
@@ -95,21 +100,19 @@ class StackConfig(BaseModel):
 def merge_profile_env(config: StackConfig, profile: dict[str, str]) -> StackConfig:
     """Apply simple PROFILE_OVERRIDES from a parsed .env profile."""
     data = config.model_dump()
-    def _bool(key: str) -> bool:
-        return profile.get(key, "").strip().lower() in {"1", "true", "yes", "on"}
 
     if "INCLUDE_BEACON" in profile:
-        data["services"]["beacon"]["enabled"] = _bool("INCLUDE_BEACON")
+        data["services"]["beacon"]["enabled"] = parse_bool(profile.get("INCLUDE_BEACON"))
     if "INCLUDE_WES" in profile:
-        data["services"]["wes"]["enabled"] = _bool("INCLUDE_WES")
+        data["services"]["wes"]["enabled"] = parse_bool(profile.get("INCLUDE_WES"))
     if "INCLUDE_TES" in profile:
-        data["services"]["tes"]["enabled"] = _bool("INCLUDE_TES")
+        data["services"]["tes"]["enabled"] = parse_bool(profile.get("INCLUDE_TES"))
     if "INCLUDE_DRS" in profile:
-        data["services"]["drs"]["enabled"] = _bool("INCLUDE_DRS")
+        data["services"]["drs"]["enabled"] = parse_bool(profile.get("INCLUDE_DRS"))
 
     if host := profile.get("HOST"):
         data["deploy"]["host"] = host
-    if (tls := profile.get("TLS")) is not None:
-        data["deploy"]["tls"] = tls.strip().lower() in {"1", "true", "yes"}
+    if "TLS" in profile:
+        data["deploy"]["tls"] = parse_bool(profile.get("TLS"))
 
     return StackConfig.model_validate(data)

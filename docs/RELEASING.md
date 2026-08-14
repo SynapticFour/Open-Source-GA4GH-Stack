@@ -26,4 +26,4 @@ cd cli && hatch build && python -m twine upload dist/*
 
 ## Version bump
 
-Edit `cli/src/community_stack/__init__.py` and `cli/pyproject.toml` `version` field together.
+Edit `cli/src/community_stack/__init__.py` (`__version__`). Hatch reads it as the package version (`[tool.hatch.version]`).

@@ -10,10 +10,12 @@ dependencies:
     repository: file://charts/beacon
     condition: beacon.enabled
   - name: sapporo
+    alias: wes
     version: 0.1.0
     repository: file://charts/sapporo
     condition: wes.enabled
   - name: funnel
+    alias: tes
     version: 0.1.0
     repository: file://charts/funnel
     condition: tes.enabled
@@ -22,6 +24,7 @@ dependencies:
     repository: file://charts/drs
     condition: drs.enabled
   - name: oauth2-proxy
+    alias: oauth2Proxy
     version: 0.1.0
     repository: file://charts/oauth2-proxy
     condition: oauth2Proxy.enabled

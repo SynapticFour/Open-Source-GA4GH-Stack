@@ -4,23 +4,32 @@ import subprocess
 import time
 from pathlib import Path
 
+import click
 import httpx
 from rich.console import Console
 
 from community_stack.generate import run_generate_compose
 from community_stack.paths import default_project_output_dir, find_assets_root
 
+_COMPOSE_UP_TIMEOUT_S = 600.0
+_COMPOSE_DOWN_TIMEOUT_S = 120.0
+_MONGOIMPORT_TIMEOUT_S = 60.0
 
-def _read_mongo_password(env_file: Path) -> str:
-    for line in env_file.read_text(encoding="utf-8").splitlines():
-        if line.strip().startswith("MONGO_PASSWORD="):
-            return line.split("=", 1)[1].strip().strip('"').strip("'")
-    return "changeme"
+
+def _docker(args: list[str], *, timeout: float) -> None:
+    try:
+        subprocess.run(args, check=True, timeout=timeout)
+    except FileNotFoundError as exc:
+        raise click.ClickException("docker not found on PATH") from exc
+    except subprocess.TimeoutExpired as exc:
+        raise click.ClickException(f"timed out running: {' '.join(args[:6])}") from exc
+    except subprocess.CalledProcessError as exc:
+        raise click.ClickException(
+            f"command failed (exit {exc.returncode}): {' '.join(args[:6])}"
+        ) from exc
 
 
 def run_demo_seed(*, project_dir: Path, compose_file: Path) -> None:
-    env_file = project_dir / ".env"
-    password = _read_mongo_password(env_file)
     demo_dir = project_dir / "data" / "demo"
     mapping = [
         ("datasets.json", "datasets"),
@@ -32,7 +41,13 @@ def run_demo_seed(*, project_dir: Path, compose_file: Path) -> None:
         fp = demo_dir / filename
         if not fp.is_file():
             continue
-        subprocess.run(
+        # Password stays inside the container env — not on the host argv.
+        inner = (
+            "mongoimport --authenticationDatabase admin -u root "
+            '-p "$MONGO_INITDB_ROOT_PASSWORD" '
+            f"--db beacon --collection {collection} --jsonArray --file /demo/{filename}"
+        )
+        _docker(
             [
                 "docker",
                 "compose",
@@ -43,40 +58,30 @@ def run_demo_seed(*, project_dir: Path, compose_file: Path) -> None:
                 "exec",
                 "-T",
                 "mongodb",
-                "mongoimport",
-                "--authenticationDatabase",
-                "admin",
-                "-u",
-                "root",
-                "-p",
-                password,
-                "--db",
-                "beacon",
-                "--collection",
-                collection,
-                "--jsonArray",
-                "--file",
-                f"/demo/{filename}",
+                "sh",
+                "-c",
+                inner,
             ],
-            check=True,
+            timeout=_MONGOIMPORT_TIMEOUT_S,
         )
 
 
 def wait_for_beacon(url: str, timeout_s: float = 60.0) -> None:
     deadline = time.monotonic() + timeout_s
     err: Exception | None = None
-    while time.monotonic() < deadline:
-        try:
-            r = httpx.get(url, timeout=5.0)
-            if r.status_code == 200:
-                return
-        except httpx.HTTPError as exc:
-            err = exc
-        time.sleep(2.0)
+    with httpx.Client(timeout=5.0) as client:
+        while time.monotonic() < deadline:
+            try:
+                r = client.get(url)
+                if r.status_code == 200:
+                    return
+            except httpx.HTTPError as exc:
+                err = exc
+            time.sleep(2.0)
     msg = f"Beacon did not become ready at {url}"
     if err is not None:
-        raise RuntimeError(msg) from err
-    raise RuntimeError(msg)
+        raise click.ClickException(msg) from err
+    raise click.ClickException(msg)
 
 
 def _resolve_stack_yaml(project_dir: Path) -> Path | None:
@@ -98,7 +103,7 @@ def run_demo_start() -> None:
         demo_mode=True,
     )
 
-    subprocess.run(
+    _docker(
         [
             "docker",
             "compose",
@@ -109,7 +114,7 @@ def run_demo_start() -> None:
             "up",
             "-d",
         ],
-        check=True,
+        timeout=_COMPOSE_UP_TIMEOUT_S,
     )
 
     wait_for_beacon("http://localhost:5050/ga4gh/beacon/v2/service-info")
@@ -131,11 +136,10 @@ def _find_compose_project() -> tuple[Path, Path]:
         compose_path = base / "docker-compose.generated.yml"
         if compose_path.is_file():
             return base, compose_path
-    msg = (
+    raise click.ClickException(
         "docker-compose.generated.yml nicht gefunden — zuerst "
         "'lab-stack demo start' ausführen."
     )
-    raise FileNotFoundError(msg)
 
 
 def run_demo_stop(*, volumes: bool = False) -> None:
@@ -152,7 +156,7 @@ def run_demo_stop(*, volumes: bool = False) -> None:
     ]
     if volumes:
         args.append("-v")
-    subprocess.run(args, check=True)
+    _docker(args, timeout=_COMPOSE_DOWN_TIMEOUT_S)
     if volumes:
         Console().print("[green]Demo-Stack entfernt (Volumes gelöscht).[/green]")
     else:
@@ -167,8 +171,7 @@ def run_demo_seed_only() -> None:
             run_demo_seed(project_dir=base, compose_file=compose_path)
             Console().print("[green]Demo-Daten eingespielt.[/green]")
             return
-    msg = (
+    raise click.ClickException(
         "docker-compose.generated.yml nicht gefunden — zuerst "
         "'lab-stack generate compose' oder 'lab-stack demo start' ausführen."
     )
-    raise FileNotFoundError(msg)

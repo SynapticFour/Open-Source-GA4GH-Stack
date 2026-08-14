@@ -14,7 +14,7 @@ Thank you for helping improve the GA4GH Community Stack.
 cd cli
 pip install -e ".[dev]"
 pytest tests/
-ruff check src/
+ruff check src/ tests/
 mypy src/ --strict
 ```
 

@@ -20,16 +20,30 @@ def bundled_assets_root() -> Path:
     return package_root() / "_bundled"
 
 
+def _markers_ok(root: Path) -> bool:
+    return all((root / marker).is_file() for marker in _MARKERS)
+
+
 def find_assets_root(start: Path | None = None) -> Path:
     """
     Root directory containing ``config/``, ``deploy/docker-compose/``, etc.
 
     Resolution order:
 
-    1. Pip wheel / sdist layout: ``community_stack/_bundled/``
-    2. Walk upwards from *start* or ``cwd`` for a repository checkout
-    3. Environment ``GA4GH_COMMUNITY_STACK_ROOT``
+    1. Environment ``GA4GH_COMMUNITY_STACK_ROOT`` (must contain the markers)
+    2. Pip wheel / sdist layout: ``community_stack/_bundled/``
+    3. Walk upwards from *start* or ``cwd`` for a repository checkout
     """
+    env_root = os.environ.get("GA4GH_COMMUNITY_STACK_ROOT")
+    if env_root:
+        p = Path(env_root).expanduser().resolve()
+        miss = [m for m in _MARKERS if not (p / m).is_file()]
+        if miss:
+            raise FileNotFoundError(
+                f"GA4GH_COMMUNITY_STACK_ROOT={p} is missing: {', '.join(miss)}"
+            )
+        return p
+
     bundled = bundled_assets_root()
     if (bundled / "deploy" / "docker-compose" / "docker-compose.base.yml").is_file():
         return bundled.resolve()
@@ -38,21 +52,8 @@ def find_assets_root(start: Path | None = None) -> Path:
         start = Path.cwd()
 
     for base in (start.resolve(), *start.resolve().parents):
-        ok = True
-        for marker in _MARKERS:
-            if not (base / marker).is_file():
-                ok = False
-                break
-        if ok:
+        if _markers_ok(base):
             return base.resolve()
-
-    env_root = os.environ.get("GA4GH_COMMUNITY_STACK_ROOT")
-    if env_root:
-        p = Path(env_root).resolve()
-        if p.is_dir():
-            miss = [m for m in _MARKERS if not (p / m).is_file()]
-            if not miss:
-                return p
 
     raise FileNotFoundError(
         "GA4GH Community Stack assets not found. "
@@ -81,6 +82,21 @@ def comparison_markdown_path() -> Path:
     raise FileNotFoundError(f"COMPARISON.md not found under {root}")
 
 
-def find_repo_root(start: Path | None = None) -> Path:
-    """Backward-compatible alias for :func:`find_assets_root`."""
-    return find_assets_root(start=start)
+def resolve_stack_yaml(explicit: Path | None, output_dir: Path) -> Path | None:
+    """Locate stack.yml: explicit path, cwd, then the project output directory."""
+    if explicit is not None:
+        return explicit if explicit.is_file() else None
+    for candidate in (Path.cwd() / "stack.yml", output_dir / "stack.yml"):
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def resolve_profile_path(explicit: Path | None, output_dir: Path) -> Path | None:
+    """Locate a .env profile: explicit ``--config``, else ``output_dir/.env`` or ``cwd/.env``."""
+    if explicit is not None:
+        return explicit
+    for candidate in (output_dir / ".env", Path.cwd() / ".env"):
+        if candidate.is_file():
+            return candidate
+    return None

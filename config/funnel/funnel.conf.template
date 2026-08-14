@@ -1,5 +1,6 @@
 # Funnel TES — https://github.com/ohsu-comp-bio/funnel
-# Adjust for SLURM login node (see docs/SLURM-SETUP.md)
+# Compute is driven by stack.yml services.tes.backend (local | slurm).
+# See docs/SLURM-SETUP.md for login-node expectations.
 
 Server:
   HostName: funnel
@@ -19,12 +20,12 @@ Database:
 Worker:
   WorkDir: /opt/funnel/work
 
-Compute: local
-# For SLURM on an HPC login node, replace Compute with:
-# Compute: slurm
-# Slurm:
-#   Partition: "{{ slurm_partition }}"
-#   Timelimit: "{{ slurm_timelimit }}"
+Compute: {{ compute }}
+{% if compute == "slurm" %}
+Slurm:
+  Partition: "{{ slurm_partition }}"
+  Timelimit: "{{ slurm_timelimit }}"
+{% endif %}
 
 Docker:
   Endpoint: unix:///var/run/docker.sock

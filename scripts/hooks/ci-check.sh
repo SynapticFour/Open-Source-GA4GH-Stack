@@ -4,10 +4,14 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 # Prefer venv if present
 export PATH="$ROOT/.venv/bin:$PATH"
+PY=(python3)
+if [[ -x "$ROOT/.venv/bin/python" ]]; then
+    PY=("$ROOT/.venv/bin/python")
+fi
 echo "ci-check: ruff"
-ruff check cli/src/
+"${PY[@]}" -m ruff check cli/src/ cli/tests/
 echo "ci-check: mypy"
-mypy cli/src/ --strict
+"${PY[@]}" -m mypy cli/src/ --strict
 echo "ci-check: pytest"
-pytest cli/tests/ -q
+"${PY[@]}" -m pytest cli/tests/ -q
 echo "ci-check: OK"

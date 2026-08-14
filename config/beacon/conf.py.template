@@ -10,21 +10,21 @@ try:
 except Exception as e:
     raise FileNotFound(
         "There are issues with the api_version.yml file. Check if it can be opened or if has any content"
-    )
+    ) from e
 
 level = logging.DEBUG
 log_file = None
-beacon_id = "{{ beacon_id }}"
-beacon_name = "{{ beacon_name }}"
-api_version = "v2.2.0"
-uri = "{{ beacon_uri }}"
+beacon_id = {{ beacon_id_py }}
+beacon_name = {{ beacon_name_py }}
+api_version = {{ api_version_py }}
+uri = {{ beacon_uri_py }}
 # Upstream beacon2-pi-api serves all endpoints under `uri_subpath`.
 # This stack (smoke tests / caddy / HelixTest) expects GA4GH v2 paths at:
 #   /ga4gh/beacon/v2/...
 uri_subpath = "/ga4gh/beacon/v2"
 complete_url = uri + uri_subpath
 environment = "test"
-description = r"{{ beacon_description }}"
+description = {{ beacon_description_py }}
 version = api_version_yaml["api_version"]
 welcome_url = "https://beacon.ega-archive.org/"
 alternative_url = "https://beacon.ega-archive.org/api"
@@ -33,18 +33,18 @@ update_datetime = ""
 default_beacon_granularity = "record"
 security_levels = {{ security_levels_py }}
 documentation_url = "https://b2ri-documentation-demo.ega-archive.org/"
-cors_urls = ["http://localhost:3003", "http://localhost:3000", "http://localhost:5050"]
+cors_urls = {{ cors_urls_py }}
 
 ga4gh_service_type_group = "org.ga4gh"
 ga4gh_service_type_artifact = "beacon"
 ga4gh_service_type_version = "1.0"
 
-org_id = "{{ org_id }}"
-org_name = "{{ org_name }}"
-org_description = "{{ org_description }}"
+org_id = {{ org_id_py }}
+org_name = {{ org_name_py }}
+org_description = {{ org_description_py }}
 org_adress = ""
 org_welcome_url = "https://ega-archive.org/"
-org_contact_url = "mailto:{{ org_contact }}"
+org_contact_url = {{ org_contact_url_py }}
 org_logo_url = "https://legacy.ega-archive.org/images/logo.png"
 org_info = ""
 

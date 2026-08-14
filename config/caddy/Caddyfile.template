@@ -1,22 +1,49 @@
-# Caddy 2 — paths forwarded as-is (Beacon/WES/TES/DRS expect /ga4gh/... prefixes)
+# Caddy 2 — Beacon keeps /ga4gh/beacon (native uri_subpath).
+# WES/TES/DRS natively serve at the container root; strip the /ga4gh/{wes,tes,drs} prefix.
 {{ caddy_site }} {
 {% if beacon %}
+    handle /ga4gh/beacon/v2/service-info {
+        reverse_proxy beacon:5050
+    }
+    handle /ga4gh/beacon/v2/info {
+        reverse_proxy beacon:5050
+    }
     handle /ga4gh/beacon/* {
+{% if auth_enabled %}
+        forward_auth oauth2-proxy:4180 {
+            uri /oauth2/auth
+        }
+{% endif %}
         reverse_proxy beacon:5050
     }
 {% endif %}
 {% if wes %}
-    handle /ga4gh/wes/* {
+    handle_path /ga4gh/wes/* {
+{% if auth_enabled %}
+        forward_auth oauth2-proxy:4180 {
+            uri /oauth2/auth
+        }
+{% endif %}
         reverse_proxy sapporo:1122
     }
 {% endif %}
 {% if tes %}
-    handle /ga4gh/tes/* {
+    handle_path /ga4gh/tes/* {
+{% if auth_enabled %}
+        forward_auth oauth2-proxy:4180 {
+            uri /oauth2/auth
+        }
+{% endif %}
         reverse_proxy funnel:8000
     }
 {% endif %}
 {% if drs %}
-    handle /ga4gh/drs/* {
+    handle_path /ga4gh/drs/* {
+{% if auth_enabled %}
+        forward_auth oauth2-proxy:4180 {
+            uri /oauth2/auth
+        }
+{% endif %}
         reverse_proxy drs:4500
     }
 {% endif %}

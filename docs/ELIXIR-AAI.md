@@ -1,6 +1,6 @@
 # ELIXIR LS Login and oauth2-proxy
 
-This stack uses **[oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy)** as a **practical** OIDC gate in front of Beacon (and optionally via Caddy for multi-service paths). The default OIDC issuer in templates is **ELIXIR Czech LS Login**:
+This stack uses **[oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy)** as a **practical** OIDC gate. When `auth.provider` is not `none`, `lab-stack generate compose` renders Caddy `forward_auth` against oauth2-proxy (`/oauth2/auth`) on Beacon/WES/TES/DRS handles, and omits published backend ports so clients go through Caddy `:80`/`:443`. Demo mode (`--demo` / `lab-stack demo start`) skips the gate.
 
 - **OIDC discovery:** `https://login.elixir-czech.org/oidc/`
 
@@ -13,7 +13,7 @@ This stack uses **[oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy)**
 Templates live in `config/oauth2-proxy/oauth2-proxy.cfg.template`. **`lab-stack generate compose`** substitutes:
 
 - `client_id`, `client_secret`
-- `redirect_url` derived from `stack.yml` `deploy.host` + `deploy.tls`
+- `redirect_url` from `ls_login.redirect_uri` / `keycloak.redirect_uri`, or derived from `deploy.host` + `deploy.tls`
 - `cookie_secret` (must be strong in production)
 - Optional **demo** mode injecting `skip_auth_regex` (see [LIMITATIONS.md](LIMITATIONS.md))
 

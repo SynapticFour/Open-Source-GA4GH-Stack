@@ -4,18 +4,26 @@ from pathlib import Path
 
 import click
 
+from community_stack import __version__
 from community_stack.compare_cmd import open_comparison
+from community_stack.config import StackConfig, merge_profile_env
 from community_stack.demo_cmd import run_demo_seed_only, run_demo_start, run_demo_stop
 from community_stack.generate import run_generate_compose
-from community_stack.helm_gen import write_values
+from community_stack.helm_gen import copy_helm_charts, write_values
 from community_stack.init_wizard import run_init_wizard
-from community_stack.paths import default_project_output_dir, find_assets_root
+from community_stack.paths import (
+    default_project_output_dir,
+    find_assets_root,
+    resolve_profile_path,
+    resolve_stack_yaml,
+)
+from community_stack.profile_env import parse_dotenv
 from community_stack.status_cmd import run_status
 from community_stack.systemd_gen import copy_systemd_units
 
 
 @click.group()
-@click.version_option()
+@click.version_option(version=__version__)
 def cli() -> None:
     """GA4GH Community Stack — lab-stack CLI."""
 
@@ -26,9 +34,25 @@ def init_cmd() -> None:
     run_init_wizard()
 
 
-@cli.group("generate")
-def generate_group() -> None:
-    """Render deployment artefacts."""
+@cli.group("generate", invoke_without_command=True)
+@click.pass_context
+def generate_group(ctx: click.Context) -> None:
+    """Render deployment artefacts (compose, helm, or systemd)."""
+    if ctx.invoked_subcommand is not None:
+        return
+    assets = find_assets_root()
+    out_base = default_project_output_dir(assets)
+    stack_path = resolve_stack_yaml(None, out_base)
+    if stack_path is None:
+        raise click.ClickException("stack.yml not found (try `lab-stack init` or pass --stack)")
+    cfg = StackConfig.from_yaml(stack_path)
+    group = ctx.command
+    if not isinstance(group, click.Group):
+        raise click.ClickException("internal error: generate is not a Click group")
+    cmd = group.get_command(ctx, cfg.deploy.target)
+    if cmd is None:
+        raise click.ClickException(f"unknown deploy.target {cfg.deploy.target!r}")
+    ctx.invoke(cmd)
 
 
 @generate_group.command("compose")
@@ -58,31 +82,34 @@ def generate_compose(
 
 
 @generate_group.command("helm")
+@click.option("--config", "profile", type=click.Path(path_type=Path), default=None)
 @click.option("--stack", type=click.Path(path_type=Path), default=None)
 @click.option(
     "--output",
     type=click.Path(path_type=Path),
     default=None,
-    help="values drop-in path (default: deploy/helm/values.generated.yaml).",
+    help="Helm chart directory (default: deploy/helm/).",
 )
-def generate_helm(stack: Path | None, output: Path | None) -> None:
-    """Emit Helm values from stack.yml."""
-    from community_stack.config import StackConfig
-
+def generate_helm(profile: Path | None, stack: Path | None, output: Path | None) -> None:
+    """Copy Helm charts and emit values.generated.yaml from stack.yml."""
     assets = find_assets_root()
     out_base = default_project_output_dir(assets)
-    stack_path: Path | None = stack
-    if stack_path is None or not stack_path.is_file():
-        cwd_candidate = Path.cwd() / "stack.yml"
-        stack_path = cwd_candidate if cwd_candidate.is_file() else out_base / "stack.yml"
-    if not stack_path.is_file():
+    stack_path = resolve_stack_yaml(stack, out_base)
+    if stack is not None and (stack_path is None or not stack_path.is_file()):
+        raise click.ClickException(f"stack.yml not found: {stack}")
+    if stack_path is None:
         raise click.ClickException(
             "stack.yml not found (try `lab-stack init` or pass --stack)",
         )
-    cfg = StackConfig.from_yaml(stack_path)
-    dest = output or (out_base / "deploy" / "helm" / "values.generated.yaml")
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    write_values(cfg, dest)
+    profile_path = resolve_profile_path(profile, out_base)
+    if profile is not None and (profile_path is None or not profile_path.is_file()):
+        raise click.ClickException(f"profile not found: {profile}")
+    env = parse_dotenv(profile_path) if profile_path is not None else {}
+    cfg = merge_profile_env(StackConfig.from_yaml(stack_path), env)
+    dest_dir = output or (out_base / "deploy" / "helm")
+    copy_helm_charts(assets, dest_dir)
+    dest = dest_dir / "values.generated.yaml"
+    write_values(cfg, dest, env)
     click.echo(f"Wrote {dest}")
 
 
@@ -103,9 +130,9 @@ def generate_systemd(output: Path | None) -> None:
 
 
 @cli.command("status")
-@click.option("--stack", type=str, default=None)
-@click.option("--profile", type=str, default=None)
-def status_cmd(stack: str | None, profile: str | None) -> None:
+@click.option("--stack", type=click.Path(path_type=Path), default=None)
+@click.option("--profile", type=click.Path(path_type=Path), default=None)
+def status_cmd(stack: Path | None, profile: Path | None) -> None:
     """HTTP health table for enabled services."""
     run_status(stack_yaml=stack, profile=profile)
 

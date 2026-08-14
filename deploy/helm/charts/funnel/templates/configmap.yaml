@@ -9,4 +9,10 @@ data:
       HostName: "0.0.0.0"
       RPCPort: "9090"
       HTTPPort: "8000"
+    Compute: {{ .Values.backend | default "local" }}
+    {{- if eq (.Values.backend | default "local") "slurm" }}
+    Slurm:
+      Partition: {{ .Values.slurm.partition | default "short" | quote }}
+      Timelimit: "4:00:00"
+    {{- end }}
 {{- end }}

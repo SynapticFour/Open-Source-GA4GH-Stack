@@ -22,7 +22,7 @@ serviceInfo:
   version: "0.2.0"
 
 endpoints:
-  drs: drs.starterkitGA4GHTest.org
+  drs: "{{ drs_public_endpoint }}"
 
 urlStyles: s3Presigned
 

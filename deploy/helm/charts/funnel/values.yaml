@@ -1,2 +1,5 @@
 enabled: false
 image: ohsucompbio/funnel:latest
+backend: local
+slurm:
+  partition: short
