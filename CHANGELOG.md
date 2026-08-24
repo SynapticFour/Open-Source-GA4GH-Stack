@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Weekly HelixTest Phase 1 / Phase 2 (WES) schedules paused. `workflow_dispatch` remains.
+
 ### Added
 
 ### Changed

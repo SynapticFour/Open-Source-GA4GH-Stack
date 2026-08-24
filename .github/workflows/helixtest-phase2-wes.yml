@@ -1,8 +1,9 @@
 name: HelixTest Phase 2 (WES)
 
 on:
-  schedule:
-    - cron: '30 4 * * 1'
+  # Weekly HelixTest paused — restore the cron when someone is watching the run.
+  # schedule:
+  #   - cron: '30 4 * * 1'
   workflow_dispatch: {}
 
 
