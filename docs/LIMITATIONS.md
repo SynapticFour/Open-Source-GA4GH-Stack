@@ -81,7 +81,7 @@ Docker Compose and Helm values currently pull floating tags for several upstream
 
 - **Beacon v2:** `beacon2-pi-api` is widely exercised, plugin-capable (incl. EUCAIM / GA4GH models per upstream docs), and actively maintained by EGA.
 - **WES:** **Sapporo** is one of the most **engine-complete** OSS WES implementations (Nextflow, Snakemake, CWL, WDL, Toil).
-- **TES / SLURM:** **Funnel** is a production-grade choice for submitting work to **SLURM**, AWS Batch, Google Batch, HTCondor, and local Docker.
+- **TES / SLURM:** **Funnel** is a widely used OSS TES for submitting work to **SLURM**, AWS Batch, Google Batch, HTCondor, and local Docker. That is not a Synaptic Four production claim.
 - **Licensing transparency:** MIT/Apache-2.0 upstreams without a commercial gate for the integration layer itself.
 - **Credibility:** Components from recognised organisations (EGA, OHSU CompBio, GA4GH Starter Kit team, Sapporo maintainers).
 

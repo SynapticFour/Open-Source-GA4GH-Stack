@@ -19,13 +19,17 @@ Dieses Projekt ist **kein** „billiger Ersatz“ für integrierte Komplett-Lös
 ## Schnellstart (Beacon)
 
 ```bash
-pip install ga4gh-community-stack    # oder: ./install.sh (wenn auf PyPI)
-pip install -e "./cli[dev]"          # aus dem Repo
-mkdir ~/ga4gh-lab && cd ~/ga4gh-lab   # bei pip-Install: schreibbares Projektverzeichnis
+git clone https://github.com/SynapticFour/Open-Source-GA4GH-Stack.git
+cd Open-Source-GA4GH-Stack
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e "./cli[dev]"
+mkdir ~/ga4gh-lab && cd ~/ga4gh-lab
 lab-stack init
 lab-stack demo start
 # http://localhost:5050/ga4gh/beacon/v2
 ```
+
+`ga4gh-community-stack` ist **nicht** auf PyPI. Nicht `pip install ga4gh-community-stack` ausführen.
 
 Das Paket enthält Templates & Compose-Fragmente im Wheel (`community_stack/_bundled/`). Details: [docs/RELEASING.md](docs/RELEASING.md).
 

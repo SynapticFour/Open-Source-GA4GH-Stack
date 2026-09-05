@@ -17,7 +17,7 @@ From a clone of this repository (Docker required):
 ```bash
 cd Open-Source-GA4GH-Stack
 python3 -m venv .venv && source .venv/bin/activate
-pip install -e "./cli[dev]"   # or: pip install ga4gh-community-stack (when published)
+pip install -e "./cli[dev]"
 lab-stack init
 lab-stack demo start
 # Beacon: http://localhost:5050/ga4gh/beacon/v2
@@ -31,11 +31,7 @@ make down      # stop; keep data
 make destroy   # remove volumes
 ```
 
-Or use `./install.sh` once the package is on PyPI (installs `lab-stack` into your user environment).
-
-### Pip install only (no git clone)
-
-Releases ship **Compose fragments, config templates, and demo JSON** inside the wheel under `community_stack/_bundled/`. After `pip install ga4gh-community-stack`, run commands from a **writable project directory** (e.g. `mkdir ~/my-lab && cd ~/my-lab`); generated files default to the current directory. `lab-stack compare` uses the bundled `COMPARISON.md`. See [docs/RELEASING.md](docs/RELEASING.md) for publishing.
+`ga4gh-community-stack` is **not** on PyPI (checked 2026-09-05). Install from this git clone (`pip install -e "./cli[dev]"`). Do not run `pip install ga4gh-community-stack`.
 
 ---
 
@@ -45,16 +41,18 @@ The same audiences as Ferrum Lab Kit and comparable **GA4GH teaching / pilot** p
 
 ---
 
-## Components (pinned upstream)
+## Components (partially pinned)
+
+Beacon, MongoDB, DRS, and Caddy use **release tags**. WES, TES, and oauth2-proxy currently use floating `:latest` tags. That is **not** a supply-chain pin (Limitation 6). Do not invent digests; pin tags or digests before any shared deployment.
 
 | Component | Upstream | Container image | License |
 |-----------|----------|-----------------|--------|
 | **Beacon v2** | [EGA-archive/beacon2-pi-api](https://github.com/EGA-archive/beacon2-pi-api) | `ghcr.io/ega-archive/beacon2-pi-api:v2.1.2` (pinned; see compose) | Apache-2.0 |
 | **MongoDB (Beacon)** | — | `mongo:5.0.32` | SSPL — [MongoDB licensing](https://www.mongodb.com/legal/licensing/sspl) |
-| **WES** | [sapporo-wes/sapporo-service](https://github.com/sapporo-wes/sapporo-service) | `ghcr.io/sapporo-wes/sapporo-service:latest` | Apache-2.0 |
-| **TES** | [ohsu-comp-bio/funnel](https://github.com/ohsu-comp-bio/funnel) | `ohsucompbio/funnel:latest` | MIT |
+| **WES** | [sapporo-wes/sapporo-service](https://github.com/sapporo-wes/sapporo-service) | `ghcr.io/sapporo-wes/sapporo-service:latest` (floating) | Apache-2.0 |
+| **TES** | [ohsu-comp-bio/funnel](https://github.com/ohsu-comp-bio/funnel) | `ohsucompbio/funnel:latest` (floating) | MIT |
 | **DRS** | [ga4gh/ga4gh-starter-kit-drs](https://github.com/ga4gh/ga4gh-starter-kit-drs) | `ga4gh/ga4gh-starter-kit-drs:0.2.0` | Apache-2.0 |
-| **OIDC gate** | [oauth2-proxy/oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy) | `quay.io/oauth2-proxy/oauth2-proxy:latest` | MIT |
+| **OIDC gate** | [oauth2-proxy/oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy) | `quay.io/oauth2-proxy/oauth2-proxy:latest` (floating) | MIT |
 | **Reverse proxy** | [Caddy](https://caddyserver.com/) | `caddy:2-alpine` | Apache-2.0 |
 
 Ingest tooling for Beacon: [beacon2-ri-tools-v2](https://github.com/EGA-archive/beacon2-ri-tools-v2) (see [docs/DATA-INGEST.md](docs/DATA-INGEST.md)).
@@ -63,7 +61,7 @@ Ingest tooling for Beacon: [beacon2-ri-tools-v2](https://github.com/EGA-archive/
 
 ## Capabilities vs limitations
 
-**Strengths:** production-trusted Beacon and WES components, mature TES/SLURM story with Funnel, open-source-first architecture with transparent per-component licensing.
+**Strengths:** widely deployed upstream Beacon (EGA) and engine-complete OSS WES (Sapporo); mature TES/SLURM story with Funnel; open-source-first architecture with transparent per-component licensing. That is **not** a Synaptic Four production claim and **not** Ferrum.
 
 **Gaps (honest):** no built-in **GA4GH Passport / visa** enforcement at the edge; **heterogeneous config formats** per service; **DRS 1.3.0-experimental** in Starter Kit vs newer spec expectations elsewhere; no bundled **RO-Crate / provenance DAG** across WES↔DRS. Details: **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)**.
 
