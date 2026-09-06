@@ -1,8 +1,8 @@
 # GA4GH Community Stack
 
-A curated deployment kit built from the best available **open-source GA4GH implementations** — modular, explicitly documented, and meant for **honest comparison** with integrated lab kits (e.g. Ferrum Lab Kit).
+A curated deployment kit built from widely used **open-source GA4GH implementations** — modular, documented, and useful next to integrated lab kits such as [Ferrum Lab Kit](https://github.com/SynapticFour/Ferrum-Lab-Kit).
 
-This repository is **not** a drop-in competitor to **Ferrum Lab Kit** (or similar commercial / integrated kits): it is the curated **open-source side** of the same architectural goals (Compose, Helm, SLURM/HPC). See **[COMPARISON.md](COMPARISON.md)** for a side-by-side view and **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)** for where OSS integrations stop short of unified, passport-aware products.
+See **[COMPARISON.md](COMPARISON.md)** for a side-by-side view and **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)** for where OSS integrations stop short of a unified, passport-aware stack.
 
 > **Legal notice:** This repository documents technical capabilities and operating guidance. It is not legal advice and does not by itself provide regulatory certification or compliance guarantees. Compliance outcomes depend on operator configuration, contracts, and organisational controls.
 
