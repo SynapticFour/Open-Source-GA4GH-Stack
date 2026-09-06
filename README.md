@@ -1,8 +1,5 @@
 # GA4GH Community Stack
 
-Status: [STATUS.md](STATUS.md).
-
-
 A curated deployment kit built from the best available **open-source GA4GH implementations** — modular, explicitly documented, and meant for **honest comparison** with integrated lab kits (e.g. Ferrum Lab Kit).
 
 This repository is **not** a drop-in competitor to **Ferrum Lab Kit** (or similar commercial / integrated kits): it is the curated **open-source side** of the same architectural goals (Compose, Helm, SLURM/HPC). See **[COMPARISON.md](COMPARISON.md)** for a side-by-side view and **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)** for where OSS integrations stop short of unified, passport-aware products.
