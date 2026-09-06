@@ -1,6 +1,6 @@
 # GA4GH Community Stack
 
-Freeze status (2026-09): [STATUS.md](STATUS.md).
+Status: [STATUS.md](STATUS.md).
 
 
 A curated deployment kit built from the best available **open-source GA4GH implementations** — modular, explicitly documented, and meant for **honest comparison** with integrated lab kits (e.g. Ferrum Lab Kit).
