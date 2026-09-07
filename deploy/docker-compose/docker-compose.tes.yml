@@ -1,6 +1,6 @@
 services:
   funnel:
-    image: ohsucompbio/funnel:latest
+    image: ohsucompbio/funnel:0.10.1@sha256:b3ff5cc039c664bfb687c6dce940813f83d4ed54a0e901881904adb84d8d77a2
     ports:
       - "8000:8000"
       - "9090:9090"

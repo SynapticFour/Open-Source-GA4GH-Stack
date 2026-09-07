@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Compose/Helm WES, TES, and oauth2-proxy images are version-pinned (Sapporo 2.2.6, Funnel 0.10.1, oauth2-proxy v7.15.4). `:latest` is not a pin.
+
 ### Added
 
 - `lab-stack grade-helixtest`: grade a HelixTest OverallReport JSON. Skip is not a pass; `all_passed` is true only when at least one non-skipped test ran and none failed.

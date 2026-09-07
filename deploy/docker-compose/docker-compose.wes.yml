@@ -1,6 +1,6 @@
 services:
   sapporo:
-    image: ghcr.io/sapporo-wes/sapporo-service:latest
+    image: ghcr.io/sapporo-wes/sapporo-service:2.2.6
     ports:
       - "1122:1122"
     volumes:

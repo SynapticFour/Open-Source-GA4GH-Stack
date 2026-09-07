@@ -15,7 +15,7 @@ Exact versions and images are pinned in the root **README** and Compose fragment
 ## WES — Sapporo
 
 - **Repository:** [sapporo-wes/sapporo-service](https://github.com/sapporo-wes/sapporo-service)
-- **Image:** `ghcr.io/sapporo-wes/sapporo-service:latest`
+- **Image:** `ghcr.io/sapporo-wes/sapporo-service:2.2.6`
 - **Spec:** WES **1.1.0** (per upstream Sapporo 2.x line)
 - **Engines:** Nextflow, Snakemake, CWL (`cwltool`), WDL (Cromwell), Toil (see Sapporo docs)
 - **Config:** `executable_workflows.json` + environment (`SAPPORO_HOST`, `SAPPORO_PORT`, **`SAPPORO_RUN_DIR`** — must point at a **writable** directory; Compose uses `/opt/sapporo/runs` with a named volume so SQLite `sapporo.db` can be created).
@@ -24,7 +24,7 @@ Exact versions and images are pinned in the root **README** and Compose fragment
 ## TES — Funnel
 
 - **Repository:** [ohsu-comp-bio/funnel](https://github.com/ohsu-comp-bio/funnel)
-- **Image:** `ohsucompbio/funnel:latest`
+- **Image:** `ohsucompbio/funnel:0.10.1`
 - **Config:** `funnel.conf` YAML.
 - **Ports:** `8000` (HTTP), `9090` (gRPC).
 - **Backends:** Docker (local dev), **SLURM**, HTCondor, AWS Batch, Google Cloud Batch.
@@ -44,7 +44,7 @@ Exact versions and images are pinned in the root **README** and Compose fragment
 ## Edge authentication — oauth2-proxy
 
 - **Repository:** [oauth2-proxy/oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy)
-- **Image:** `quay.io/oauth2-proxy/oauth2-proxy:latest`
+- **Image:** `quay.io/oauth2-proxy/oauth2-proxy:v7.15.4`
 - **Role:** OIDC **authentication** in front of HTTP upstreams. **Not** GA4GH Passport-aware (see [LIMITATIONS.md](LIMITATIONS.md)).
 
 ## Reverse proxy — Caddy 2

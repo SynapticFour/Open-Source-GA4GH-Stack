@@ -49,10 +49,10 @@ Beacon, MongoDB, DRS, and Caddy use **release tags**. WES, TES, and oauth2-proxy
 |-----------|----------|-----------------|--------|
 | **Beacon v2** | [EGA-archive/beacon2-pi-api](https://github.com/EGA-archive/beacon2-pi-api) | `ghcr.io/ega-archive/beacon2-pi-api:v2.1.2` (pinned; see compose) | Apache-2.0 |
 | **MongoDB (Beacon)** | — | `mongo:5.0.32` | SSPL — [MongoDB licensing](https://www.mongodb.com/legal/licensing/sspl) |
-| **WES** | [sapporo-wes/sapporo-service](https://github.com/sapporo-wes/sapporo-service) | `ghcr.io/sapporo-wes/sapporo-service:latest` (floating) | Apache-2.0 |
-| **TES** | [ohsu-comp-bio/funnel](https://github.com/ohsu-comp-bio/funnel) | `ohsucompbio/funnel:latest` (floating) | MIT |
+| **WES** | [sapporo-wes/sapporo-service](https://github.com/sapporo-wes/sapporo-service) | `ghcr.io/sapporo-wes/sapporo-service:2.2.6` | Apache-2.0 |
+| **TES** | [ohsu-comp-bio/funnel](https://github.com/ohsu-comp-bio/funnel) | `ohsucompbio/funnel:0.10.1` | MIT |
 | **DRS** | [ga4gh/ga4gh-starter-kit-drs](https://github.com/ga4gh/ga4gh-starter-kit-drs) | `ga4gh/ga4gh-starter-kit-drs:0.2.0` | Apache-2.0 |
-| **OIDC gate** | [oauth2-proxy/oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy) | `quay.io/oauth2-proxy/oauth2-proxy:latest` (floating) | MIT |
+| **OIDC gate** | [oauth2-proxy/oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy) | `quay.io/oauth2-proxy/oauth2-proxy:v7.15.4` | MIT |
 | **Reverse proxy** | [Caddy](https://caddyserver.com/) | `caddy:2-alpine` | Apache-2.0 |
 
 Ingest tooling for Beacon: [beacon2-ri-tools-v2](https://github.com/EGA-archive/beacon2-ri-tools-v2) (see [docs/DATA-INGEST.md](docs/DATA-INGEST.md)).

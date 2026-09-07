@@ -67,9 +67,9 @@ Nothing in this kit automatically records a **DAG** of “**which WES run read w
 
 Docker Compose and Helm values currently pull floating tags for several upstreams, including:
 
-- WES: `ghcr.io/sapporo-wes/sapporo-service:latest`
-- TES: `ohsucompbio/funnel:latest`
-- OIDC gate: `quay.io/oauth2-proxy/oauth2-proxy:latest`
+- WES: `ghcr.io/sapporo-wes/sapporo-service:2.2.6`
+- TES: `ohsucompbio/funnel:0.10.1`
+- OIDC gate: `quay.io/oauth2-proxy/oauth2-proxy:v7.15.4`
 
 **Implication:** demos are convenient but **not reproducible** across time; upstream breakage can land without a deliberate bump. Pinning digests or release tags is tracked as known debt; prefer pins before any shared or long-lived deployment.
 
