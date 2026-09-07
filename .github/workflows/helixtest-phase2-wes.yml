@@ -69,10 +69,12 @@ jobs:
           fi
 
           echo "wes_ready=false" >> "$GITHUB_OUTPUT"
-          echo "Sapporo did not expose /service-info within $((attempts*5))s"
+          echo "::error::Sapporo did not expose /service-info within $((attempts*5))s; HelixTest did not run. That is not a pass."
           docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs-wes ps -a || true
           docker compose -f /tmp/ga4gh-cs-wes/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs-wes logs --no-color --tail=200 sapporo || true
-          exit 0
+          # Not-ready used to `exit 0`, then HelixTest was skipped and the job stayed
+          # green. Skip is not a pass; a suite that never ran must not look like one.
+          exit 1
 
       - name: WES diagnostics on failure
         if: failure()
@@ -89,7 +91,7 @@ jobs:
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Run HelixTest (phase 2, WES only, non-blocking)
+      - name: Run HelixTest (phase 2, WES only)
         if: steps.wait.outputs.wes_ready == 'true'
         env:
           # Sapporo serves GA4GH WES at host root (see sapporo docs): /service-info, /runs, …
@@ -122,15 +124,21 @@ jobs:
           ec=0
           wait "$pid" || ec=$?
           # HelixTest exits 1 when any case fails; --fail-level 0 does not change that.
-          # Treat conformance gaps as non-blocking; fail only on Cargo/build errors (~101).
           if [ "$ec" -eq 101 ]; then
             echo "::error::Cargo failed to build or run HelixTest (exit 101)"
             exit 101
           fi
-          if [ "$ec" -ne 0 ]; then
-            echo "::warning::HelixTest exited with $ec (expected vs vanilla Sapporo); see artifact helix-report-phase2-wes"
+          # Do not `exit 0` here. That used to swallow HelixTest's non-zero exit
+          # (typically 1 on a real Fail) so the GitHub job stayed green. Skip-only
+          # JSON must also not become all_passed: grade-helixtest treats skip as
+          # not_evaluated, never as a pass. Real Fail → non-zero job exit.
+          # Vanilla Sapporo often fails TRS-aligned WES lifecycle cases; those
+          # Fails must fail this job. That is not GA4GH certification.
+          if [ ! -s "$outfile" ]; then
+            echo "::error::HelixTest produced no JSON report (exit $ec)"
+            exit "${ec:-2}"
           fi
-          exit 0
+          lab-stack grade-helixtest "$outfile"
 
       - name: Upload HelixTest report
         if: always()

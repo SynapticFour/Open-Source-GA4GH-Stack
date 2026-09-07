@@ -9,6 +9,7 @@ from community_stack.compare_cmd import open_comparison
 from community_stack.config import StackConfig, merge_profile_env
 from community_stack.demo_cmd import run_demo_seed_only, run_demo_start, run_demo_stop
 from community_stack.generate import run_generate_compose
+from community_stack.helixtest_report import run_grade
 from community_stack.helm_gen import copy_helm_charts, write_values
 from community_stack.init_wizard import run_init_wizard
 from community_stack.paths import (
@@ -171,6 +172,13 @@ def demo_seed() -> None:
 def compare_cmd() -> None:
     """Open COMPARISON.md in $PAGER."""
     open_comparison()
+
+
+@cli.command("grade-helixtest")
+@click.argument("report", type=click.Path(path_type=Path, exists=False))
+def grade_helixtest_cmd(report: Path) -> None:
+    """Grade a HelixTest OverallReport JSON (skip is not a pass)."""
+    raise SystemExit(run_grade(report))
 
 
 if __name__ == "__main__":

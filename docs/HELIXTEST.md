@@ -10,8 +10,8 @@ For a **full** GA4GH matrix (WES, TES, DRS, Beacon, htsget, auth, Crypt4GH, etc.
 
 ### Phase 1 — Beacon
 
-Workflow: **[`.github/workflows/helixtest-phase1.yml`](../.github/workflows/helixtest-phase1.yml)**  
-Job: `beacon-safe-subset` (on `push` / `pull_request` to `main`, or **workflow_dispatch**).
+Workflow: **[`.github/workflows/helixtest-phase1.yml`](../.github/workflows/helixtest-phase1.yml)**
+Job: `beacon-safe-subset` (**workflow_dispatch** only; weekly cron is paused).
 
 Rough sequence:
 
@@ -22,18 +22,21 @@ Rough sequence:
    - `docker compose -f …/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs up -d beacon mongodb`
 4. **Wait** until Beacon answers:
    - `GET http://localhost:5050/ga4gh/beacon/v2/service-info` → HTTP 200
+   - If Beacon never becomes ready, the **job fails** (HelixTest did not run; that is not a pass).
 5. **Seed** MongoDB with demo JSON (same collections as `lab-stack demo seed`):
    - `datasets`, `cohorts`, `individuals`, `genomicVariations` from `/demo/*.json` inside the Mongo container.
 6. Checkout **HelixTest** (`SynapticFour/HelixTest`), then run:
    - `cargo run --bin helixtest -- --all --mode ferrum --only beacon --verbose --report json --fail-level 0`
-7. Upload **`helix-report-phase1`** artifact (JSON report path in workflow: `/tmp/helix-report-phase1.json`).
+7. **Grade** the JSON with **`lab-stack grade-helixtest`**, then upload **`helix-report-phase1`** (`/tmp/helix-report-phase1.json`).
 8. **Tear down** Compose (`down -v`).
 
-The HelixTest step uses **`continue-on-error: true`**, captures the child exit with **`ec=0; wait "$pid" || ec=$?`** (required because GHA’s default shell is **`bash -e`**: a plain **`wait`** on a failing process would **terminate the script** before any **`ec=$?`** line runs), then ends with **`exit 0`** for conformance failures. HelixTest exits **`1`** when any case fails (**`--fail-level 0`** only relaxes the *overall level* gate). **Cargo** build failures (typically exit **101**) still fail the step. The artifact captures the JSON when the binary printed it.
+The HelixTest step captures the child exit with **`ec=0; wait "$pid" || ec=$?`** (required because GHA’s default shell is **`bash -e`**: a plain **`wait`** on a failing process would **terminate the script** before any **`ec=$?`** line runs). **Cargo** build failures (typically exit **101**) fail the step. A missing JSON report also fails the step.
+
+The report is then graded with **`lab-stack grade-helixtest`**. HelixTest exits **`1`** when any case fails (**`--fail-level 0`** only relaxes the *overall level* gate). A real **Fail** in the JSON fails the GitHub job (exit **1**). **Skip is not a pass:** skip-only or empty JSON is **`verdict=not_evaluated`** with **`all_passed=false`** (job exit **0**). **`all_passed=true`** only when at least one non-skipped test ran and none failed. Green CI is a technical signal, not GA4GH certification. The YAML does **not** use **`continue-on-error`**.
 
 ### Phase 2 — WES (Sapporo)
 
-Workflow: **[`.github/workflows/helixtest-phase2-wes.yml`](../.github/workflows/helixtest-phase2-wes.yml)**  
+Workflow: **[`.github/workflows/helixtest-phase2-wes.yml`](../.github/workflows/helixtest-phase2-wes.yml)**
 Job: `sapporo-wes-subset` (same triggers as Phase 1).
 
 Rough sequence:
@@ -41,15 +44,15 @@ Rough sequence:
 1. Checkout, install **`lab-stack`**, **generate** Compose with **`config/profiles/beacon-wes.env`** → `/tmp/ga4gh-cs-wes` (merged **base + beacon + WES** fragments).
 2. **`docker compose … config`** to validate the generated file.
 3. Start only **`sapporo`** (HelixTest talks to WES on the published host port; Beacon/Caddy are not required for this job).
-4. Wait until **`GET http://localhost:1122/service-info`** returns HTTP 200 (Sapporo default; see [Sapporo docs](https://sapporo-wes.github.io/sapporo/GettingStarted.html)).
+4. Wait until **`GET http://localhost:1122/service-info`** returns HTTP 200 (Sapporo default; see [Sapporo docs](https://sapporo-wes.github.io/sapporo/GettingStarted.html)). If Sapporo never becomes ready, the **job fails**.
 5. Checkout **HelixTest**, then run:
    - `cargo run --bin helixtest -- --all --mode generic --only wes --verbose --report json --fail-level 0`
-6. Upload artifact **`helix-report-phase2-wes`** (`/tmp/helix-report-phase2-wes.json`).
+6. **Grade** with **`lab-stack grade-helixtest`**, then upload artifact **`helix-report-phase2-wes`** (`/tmp/helix-report-phase2-wes.json`).
 7. Tear down (`down -v`).
 
 **`WES_URL`** for this stack is **`http://localhost:1122`** (no `/ga4gh/wes/v1` prefix): HelixTest calls `{WES_URL}/service-info`, `{WES_URL}/runs`, etc.
 
-**Expectations:** HelixTest’s WES suite submits **`trs://…`** workflow references and assumes a **TRS-aligned** tool registry. **Vanilla Sapporo** will often **fail** lifecycle / error-state cases even when **`service-info`** is healthy. The workflow uses **`continue-on-error: true`** and **`exit 0`** after the run (same semantics as Phase 1) so the job stays green while the JSON artifact records gaps.
+**Expectations:** HelixTest’s WES suite submits **`trs://…`** workflow references and assumes a **TRS-aligned** tool registry. **Vanilla Sapporo** will often **fail** lifecycle / error-state cases even when **`service-info`** is healthy. Those **Fails** fail the GitHub job (same grader as Phase 1). Skip-only remains **`not_evaluated`**, not **`all_passed`**. The JSON artifact is the inspectable record; a red job is not GA4GH certification.
 
 **Why `--mode generic`:** With **`WES_URL`** set, generic mode’s initial **`/service-info`** probe hits Sapporo quickly. If the response does not identify itself as Ferrum, checks stay on the **generic** path (appropriate for Sapporo).
 
@@ -155,7 +158,7 @@ docker compose -f "$OUT/docker-compose.generated.yml" --project-directory "$OUT"
 |----------|------|
 | [`compose-smoke.yml`](../.github/workflows/compose-smoke.yml) | Validates generated Compose and waits for Beacon `service-info` (no HelixTest). |
 | [`helixtest-phase1.yml`](../.github/workflows/helixtest-phase1.yml) | Beacon + seed + HelixTest + artifact. |
-| [`helixtest-phase2-wes.yml`](../.github/workflows/helixtest-phase2-wes.yml) | Beacon+WES profile generate + Sapporo + HelixTest WES-only + artifact (non-blocking). |
+| [`helixtest-phase2-wes.yml`](../.github/workflows/helixtest-phase2-wes.yml) | Beacon+WES profile generate + Sapporo + HelixTest WES-only + grade + artifact. |
 
 ---
 

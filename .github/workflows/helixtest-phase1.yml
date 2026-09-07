@@ -64,12 +64,14 @@ jobs:
           fi
 
           echo "beacon_ready=false" >> "$GITHUB_OUTPUT"
-          echo "Beacon did not become ready within $((attempts*5))s"
+          echo "::error::Beacon did not become ready within $((attempts*5))s; HelixTest did not run. That is not a pass."
           echo "---- Beacon container state ----"
           docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs ps -a || true
           echo "---- Beacon + Mongo logs (tail) ----"
           docker compose -f /tmp/ga4gh-cs/docker-compose.generated.yml --project-directory /tmp/ga4gh-cs logs --no-color --tail=200 beacon mongodb || true
-          exit 0
+          # Not-ready used to `exit 0`, then HelixTest was skipped and the job stayed
+          # green. Skip is not a pass; a suite that never ran must not look like one.
+          exit 1
 
       - name: Seed Beacon demo data into MongoDB
         if: steps.wait.outputs.beacon_ready == 'true'
@@ -109,7 +111,7 @@ jobs:
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Run HelixTest (phase 1, beacon-only, non-blocking)
+      - name: Run HelixTest (phase 1, beacon-only)
         if: steps.wait.outputs.beacon_ready == 'true'
         env:
           BEACON_URL: http://localhost:5050/ga4gh/beacon/v2
@@ -139,16 +141,22 @@ jobs:
             fi
             sleep 20
           done
+          # GHA default shell is bash -e: wait on a failing child aborts before ec=$? .
           ec=0
           wait "$pid" || ec=$?
           if [ "$ec" -eq 101 ]; then
             echo "::error::Cargo failed to build or run HelixTest (exit 101)"
             exit 101
           fi
-          if [ "$ec" -ne 0 ]; then
-            echo "::warning::HelixTest exited with $ec; see artifact helix-report-phase1"
+          # Do not `exit 0` here. That used to swallow HelixTest's non-zero exit
+          # (typically 1 on a real Fail) so the GitHub job stayed green. Skip-only
+          # JSON must also not become all_passed: grade-helixtest treats skip as
+          # not_evaluated, never as a pass. Real Fail → non-zero job exit.
+          if [ ! -s "$outfile" ]; then
+            echo "::error::HelixTest produced no JSON report (exit $ec)"
+            exit "${ec:-2}"
           fi
-          exit 0
+          lab-stack grade-helixtest "$outfile"
 
       - name: Upload HelixTest report
         if: always()
