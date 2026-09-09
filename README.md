@@ -15,7 +15,6 @@ See **[COMPARISON.md](COMPARISON.md)** for a side-by-side view and **[docs/LIMIT
 From a clone of this repository (Docker required):
 
 ```bash
-cd Open-Source-GA4GH-Stack
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e "./cli[dev]"
 lab-stack init
@@ -41,9 +40,9 @@ The same audiences as Ferrum Lab Kit and comparable **GA4GH teaching / pilot** p
 
 ---
 
-## Components (partially pinned)
+## Components (pinned tags; Caddy still floats)
 
-Beacon, MongoDB, DRS, and Caddy use **release tags**. WES, TES, and oauth2-proxy currently use floating `:latest` tags. That is **not** a supply-chain pin (Limitation 6). Do not invent digests; pin tags or digests before any shared deployment.
+Beacon, MongoDB, WES, TES, DRS, and oauth2-proxy use **release tags** (see table). **Caddy** still uses the floating tag `caddy:2-alpine`. That is **not** a digest pin (Limitation 6). Do not invent digests; pin tags or digests before any shared deployment.
 
 | Component | Upstream | Container image | License |
 |-----------|----------|-----------------|--------|

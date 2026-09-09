@@ -59,19 +59,19 @@ On **HPC login nodes**, operating multiple runtimes and log formats is **more de
 
 Nothing in this kit automatically records a **DAG** of “**which WES run read which DRS objects**” suitable for publication compliance out of the box. Labs must bolt on workflow metadata, passports, and archival tooling themselves.
 
-**Ferrum Lab Kit (positioning):** built-in **provenance** and **RO-Crate export** in product messaging.
+**Ferrum Lab Kit:** a deploy generator around a pinned Ferrum image. It does **not** implement GA4GH protocol logic and does **not** ship RO-Crate or signed provenance. Cross-service evidence (JSON / PDF / RO-Crate) is **[HELIOS](https://github.com/SynapticFour/HELIOS)** (`helios-audit` 0.1.1, Early Access).
 
 ---
 
-## Limitation 6: WES / TES (and related) Compose images use `:latest` (known debt)
+## Limitation 6: Caddy still floats; WES / TES / oauth2-proxy are tag-pinned
 
-Docker Compose and Helm values currently pull floating tags for several upstreams, including:
+Docker Compose and Helm values pin WES, TES, and oauth2-proxy to **release tags**:
 
 - WES: `ghcr.io/sapporo-wes/sapporo-service:2.2.6`
 - TES: `ohsucompbio/funnel:0.10.1`
 - OIDC gate: `quay.io/oauth2-proxy/oauth2-proxy:v7.15.4`
 
-**Implication:** demos are convenient but **not reproducible** across time; upstream breakage can land without a deliberate bump. Pinning digests or release tags is tracked as known debt; prefer pins before any shared or long-lived deployment.
+**Caddy** remains `caddy:2-alpine` (floating). Tag pins are still **not** digest pins: upstream can retag. Prefer digests before any shared or long-lived deployment.
 
 **Ferrum Lab Kit (positioning):** version-pinned images in release artifacts.
 

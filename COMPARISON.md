@@ -12,7 +12,7 @@ This page is meant for **decision support**, not marketing. Both stacks aim at *
 | **DRS specification level** | Starter Kit **DRS 1.3.0-experimental** (pinned image) | Typically tracks **newer DRS** (e.g. 1.4) in product releases |
 | **Runtime diversity** | Python + Go + Java/JVM + MongoDB (+ optional Postgres) | **Homogeneous** product architecture (e.g. Rust + Postgres in Ferrum stack) |
 | **Conformance / audit** | Community testing; **no bundled consortium conformance PDF** | Suited when a **conformance PDF** is needed for applications |
-| **Provenance / RO-Crate** | **Not** bundled across WES↔DRS | Built-in provenance / **RO-Crate** story in product positioning |
+| **Provenance / RO-Crate** | **Not** bundled across WES↔DRS | Lab Kit does **not** ship RO-Crate; that is [HELIOS](https://github.com/SynapticFour/HELIOS) (`helios-audit` 0.1.1) |
 | **TES / HPC** | **Funnel** with SLURM / Batch / local Docker backends | Product integration (details per Ferrum release) |
 | **WES engines** | **Sapporo** (Nextflow, Snakemake, CWL, WDL, Toil, …) | Product integration |
 | **Beacon** | **beacon2-pi-api** (EGA), MongoDB 5.0.32 | Product integration |
