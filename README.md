@@ -6,7 +6,7 @@ See **[COMPARISON.md](COMPARISON.md)** for a side-by-side view and **[docs/LIMIT
 
 > **Legal notice:** This repository documents technical capabilities and operating guidance. It is not legal advice and does not by itself provide regulatory certification or compliance guarantees. Compliance outcomes depend on operator configuration, contracts, and organisational controls.
 
-**License:** MIT (this repo). **Upstream images:** MIT or Apache-2.0 as listed below.
+**License:** MIT (this repository's integration layer). **Upstream images are not one OSI set.** The component table lists Apache-2.0 and MIT images, MongoDB under SSPL, Caddy on the floating tag `caddy:2-alpine`, and Starter Kit DRS `0.2.0` (DRS 1.3.0-experimental).
 
 ---
 
@@ -60,7 +60,7 @@ Ingest tooling for Beacon: [beacon2-ri-tools-v2](https://github.com/EGA-archive/
 
 ## Capabilities vs limitations
 
-**Strengths:** widely deployed upstream Beacon (EGA) and engine-complete OSS WES (Sapporo); mature TES/SLURM story with Funnel; open-source-first architecture with transparent per-component licensing. That is **not** a Synaptic Four production claim and **not** Ferrum.
+**Strengths:** widely deployed upstream Beacon (EGA) and engine-complete WES (Sapporo); TES/SLURM story with Funnel; per-component licenses are listed in the table above, including MongoDB under SSPL. That is **not** a claim that every image is MIT or Apache-2.0, **not** a Synaptic Four production claim, and **not** Ferrum.
 
 **Gaps (honest):** no built-in **GA4GH Passport / visa** enforcement at the edge; **heterogeneous config formats** per service; **DRS 1.3.0-experimental** in Starter Kit vs newer spec expectations elsewhere; no bundled **RO-Crate / provenance DAG** across WES↔DRS. Details: **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)**.
 

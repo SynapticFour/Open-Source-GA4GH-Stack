@@ -59,7 +59,7 @@ On **HPC login nodes**, operating multiple runtimes and log formats is **more de
 
 Nothing in this kit automatically records a **DAG** of “**which WES run read which DRS objects**” suitable for publication compliance out of the box. Labs must bolt on workflow metadata, passports, and archival tooling themselves.
 
-**Ferrum Lab Kit:** a deploy generator around a pinned Ferrum image. It does **not** implement GA4GH protocol logic and does **not** ship RO-Crate or signed provenance. Cross-service evidence (JSON / PDF / RO-Crate) is **[HELIOS](https://github.com/SynapticFour/HELIOS)** (`helios-audit` 0.1.1, Early Access).
+**Ferrum Lab Kit:** a deploy generator around a pinned Ferrum image. It does **not** implement GA4GH protocol logic and does **not** ship RO-Crate or signed provenance. Cross-service evidence (JSON / PDF / RO-Crate) is **[HELIOS](https://github.com/SynapticFour/HELIOS)** (`helios-audit` 0.1.2, the PyPI version recorded in 2026-10; git tag `v0.1.2`; Early Access).
 
 ---
 
@@ -82,7 +82,7 @@ Docker Compose and Helm values pin WES, TES, and oauth2-proxy to **release tags*
 - **Beacon v2:** `beacon2-pi-api` is widely exercised, plugin-capable (incl. EUCAIM / GA4GH models per upstream docs), and actively maintained by EGA.
 - **WES:** **Sapporo** is one of the most **engine-complete** OSS WES implementations (Nextflow, Snakemake, CWL, WDL, Toil).
 - **TES / SLURM:** **Funnel** is a widely used OSS TES for submitting work to **SLURM**, AWS Batch, Google Batch, HTCondor, and local Docker. That is not a Synaptic Four production claim.
-- **Licensing transparency:** MIT/Apache-2.0 upstreams without a commercial gate for the integration layer itself.
+- **Licensing:** this repository's integration layer is MIT. Upstreams are not all MIT or Apache-2.0. MongoDB is SSPL. Caddy is the floating tag `caddy:2-alpine`. DRS is 1.3.0-experimental on `ga4gh/ga4gh-starter-kit-drs:0.2.0`. The README component table is the list.
 - **Credibility:** Components from recognised organisations (EGA, OHSU CompBio, GA4GH Starter Kit team, Sapporo maintainers).
 
 ---
