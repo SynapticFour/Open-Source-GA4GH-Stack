@@ -91,7 +91,7 @@ Other URLs (`TES_URL`, `DRS_URL`, …) are **not** set in these workflows.
 
 In **`generic`** mode, HelixTest’s runner first probes **WES** at `{wes_url}/service-info` to auto-detect a Ferrum-style deployment. The default `wes_url` is `http://localhost:8080`, which **nothing listens on** in the Beacon-only Compose profile — so the run appears to “hang” on retries.
 
-**`--mode ferrum`** skips that probe and goes straight to the Beacon checks, which matches our CI stack.
+**`--mode ferrum`** skips that probe and goes straight to the Beacon checks, which matches the CI stack.
 
 Naming is historical (“Ferrum mode” in HelixTest); here it only means **skip WES auto-detect**, not “this IS Ferrum”.
 
@@ -165,4 +165,4 @@ docker compose -f "$OUT/docker-compose.generated.yml" --project-directory "$OUT"
 ## Future extensions (not implemented here)
 
 - HelixTest against **TES / DRS** (and deeper **WES** alignment, e.g. TRS or workflow fixtures) when profiles and seed data exist.
-- Optional **`HELIXTEST_PROFILE`** / **`HELIXTEST_CONFIG`** for HelixTest (see upstream) if we add checked-in TOML profiles for this stack.
+- Optional **`HELIXTEST_PROFILE`** / **`HELIXTEST_CONFIG`** for HelixTest (see upstream) if checked-in TOML profiles are added for this stack.

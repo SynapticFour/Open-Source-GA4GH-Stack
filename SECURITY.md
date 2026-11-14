@@ -9,7 +9,7 @@ Report vulnerabilities privately to **contact@synapticfour.com** with:
 - reproduction steps or proof-of-concept
 - impact assessment
 
-We will acknowledge receipt as quickly as possible, triage severity, and coordinate a responsible disclosure timeline.
+A report is acknowledged as soon as the maintainer can. Severity is then triaged. This page does not promise a time.
 
 ## Scope and Guarantees
 

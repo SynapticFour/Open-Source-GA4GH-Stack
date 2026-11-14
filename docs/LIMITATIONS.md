@@ -87,6 +87,6 @@ Docker Compose and Helm values pin WES, TES, and oauth2-proxy to **release tags*
 
 ---
 
-## How we use this document
+## How to use this document
 
-If a limitation here is a **hard requirement** for your pilot (Passport visas, DRS 1.4-only clients, single-schema ops), factor that into **kit selection** early. If the limitation is acceptable, you gain **upstream flexibility** at the cost of **integration labour** — a trade this repo documents rather than hiding.
+If a limitation here is a **hard requirement** for a pilot (Passport visas, DRS 1.4-only clients, single-schema ops), factor that into **kit selection** early. If the limitation is acceptable, the lab gains **upstream flexibility** at the cost of **integration labour** — a trade this repo documents rather than hiding.
