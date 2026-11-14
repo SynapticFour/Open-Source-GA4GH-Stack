@@ -1,8 +1,8 @@
 # Code of Conduct
 
-## Our Commitment
+## Commitment
 
-We are committed to a respectful, inclusive, and constructive collaboration environment for all contributors and users.
+This project keeps a respectful, inclusive, and constructive collaboration environment for all contributors and users.
 
 ## Expected Behavior
 
